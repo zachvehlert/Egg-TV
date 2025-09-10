@@ -1,34 +1,77 @@
-// Popular Bootstrap icons for streaming/media services
-const popularIcons = [
-    'bi-play-circle', 'bi-film', 'bi-tv', 'bi-music-note-beamed', 'bi-headphones',
-    'bi-camera-video', 'bi-broadcast', 'bi-disc', 'bi-vinyl', 'bi-cassette',
-    'bi-speaker', 'bi-boombox', 'bi-mic', 'bi-radio', 'bi-youtube',
-    'bi-facebook', 'bi-twitter', 'bi-instagram', 'bi-linkedin', 'bi-github',
-    'bi-google', 'bi-microsoft', 'bi-apple', 'bi-amazon', 'bi-netflix',
-    'bi-spotify', 'bi-twitch', 'bi-discord', 'bi-reddit', 'bi-pinterest',
-    'bi-whatsapp', 'bi-telegram', 'bi-slack', 'bi-zoom', 'bi-skype',
-    'bi-gamepad2', 'bi-controller', 'bi-joystick', 'bi-puzzle', 'bi-dice-1',
-    'bi-heart', 'bi-star', 'bi-bookmark', 'bi-flag', 'bi-trophy',
-    'bi-gift', 'bi-camera', 'bi-images', 'bi-palette', 'bi-brush',
-    'bi-scissors', 'bi-hammer', 'bi-wrench', 'bi-gear', 'bi-tools',
-    'bi-house', 'bi-building', 'bi-shop', 'bi-cart', 'bi-bag',
-    'bi-wallet', 'bi-credit-card', 'bi-piggy-bank', 'bi-currency-dollar', 'bi-graph-up',
-    'bi-newspaper', 'bi-book', 'bi-journal', 'bi-pencil', 'bi-pen',
-    'bi-calendar', 'bi-clock', 'bi-alarm', 'bi-stopwatch', 'bi-hourglass',
-    'bi-globe', 'bi-compass', 'bi-map', 'bi-geo-alt', 'bi-airplane',
-    'bi-train', 'bi-car-front', 'bi-bicycle', 'bi-scooter', 'bi-truck',
-    'bi-cloud', 'bi-sun', 'bi-moon', 'bi-snow', 'bi-thermometer',
-    'bi-lightbulb', 'bi-fire', 'bi-droplet', 'bi-tree', 'bi-flower1'
-];
+// Dynamic Bootstrap Icons array - will be populated from CSS
+let allBootstrapIcons = [];
+
+// Function to dynamically extract Bootstrap icon classes from CSS
+async function loadBootstrapIcons() {
+    try {
+        // Find the Bootstrap Icons CSS link
+        const bootstrapIconsLink = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+            .find(link => link.href.includes('bootstrap-icons'));
+        
+        if (!bootstrapIconsLink) {
+            console.warn('Bootstrap Icons CSS not found, using fallback icons');
+            return getFallbackIcons();
+        }
+
+        // Fetch the CSS content
+        const response = await fetch(bootstrapIconsLink.href);
+        const cssText = await response.text();
+        
+        // Extract icon class names using regex
+        // Bootstrap icons follow the pattern .bi-icon-name::before
+        const iconMatches = cssText.match(/\.bi-[a-z0-9-]+(?=::before)/g);
+        
+        if (iconMatches) {
+            // Remove duplicates and sort
+            const uniqueIcons = [...new Set(iconMatches)]
+                .map(match => match.substring(1)) // Remove the leading dot
+                .sort();
+            
+            console.log(`Loaded ${uniqueIcons.length} Bootstrap icons dynamically`);
+            return uniqueIcons;
+        } else {
+            console.warn('Could not parse Bootstrap Icons from CSS, using fallback');
+            return getFallbackIcons();
+        }
+    } catch (error) {
+        console.error('Error loading Bootstrap Icons:', error);
+        return getFallbackIcons();
+    }
+}
+
+// Fallback icons for when dynamic loading fails
+function getFallbackIcons() {
+    return [
+        'bi-alarm', 'bi-app', 'bi-archive', 'bi-arrow-down', 'bi-arrow-left', 'bi-arrow-right', 'bi-arrow-up',
+        'bi-bag', 'bi-bell', 'bi-book', 'bi-bookmark', 'bi-calendar', 'bi-camera', 'bi-cart', 'bi-chat',
+        'bi-check', 'bi-circle', 'bi-clipboard', 'bi-clock', 'bi-cloud', 'bi-code', 'bi-compass',
+        'bi-cpu', 'bi-credit-card', 'bi-cursor', 'bi-dash', 'bi-disc', 'bi-download', 'bi-envelope',
+        'bi-eye', 'bi-file', 'bi-film', 'bi-flag', 'bi-folder', 'bi-gear', 'bi-gift', 'bi-globe',
+        'bi-graph-up', 'bi-grid', 'bi-hammer', 'bi-heart', 'bi-house', 'bi-image', 'bi-info',
+        'bi-key', 'bi-laptop', 'bi-link', 'bi-list', 'bi-lock', 'bi-map', 'bi-mic', 'bi-moon',
+        'bi-music-note', 'bi-pause', 'bi-pencil', 'bi-person', 'bi-phone', 'bi-play', 'bi-plus',
+        'bi-printer', 'bi-search', 'bi-share', 'bi-shield', 'bi-star', 'bi-stop', 'bi-sun',
+        'bi-table', 'bi-tag', 'bi-trash', 'bi-tv', 'bi-upload', 'bi-volume-up', 'bi-wifi', 'bi-x'
+    ];
+}
 
 let selectedCustomIcon = {
     add: null,
     edit: null
 };
 
+let selectedIconColor = {
+    add: '#6366f1',
+    edit: '#6366f1'
+};
+
 // Modal functionality
 function openAddModal() {
     document.getElementById('addLinkModal').classList.add('show');
+    document.getElementById('addIconSearch').value = '';
+    document.getElementById('addIconColor').value = '#6366f1';
+    selectedIconColor.add = '#6366f1';
+    updateIconPreviewColor('add', '#6366f1');
     initializeIconGrid('add');
 }
 
@@ -38,6 +81,10 @@ function closeAddModal() {
 
 function openEditModal() {
     document.getElementById('editLinkModal').classList.add('show');
+    document.getElementById('editIconSearch').value = '';
+    document.getElementById('editIconColor').value = '#6366f1';
+    selectedIconColor.edit = '#6366f1';
+    updateIconPreviewColor('edit', '#6366f1');
     initializeIconGrid('edit');
 }
 
@@ -55,20 +102,41 @@ function toggleCustomIcon(modalType) {
     
     if (!toggle.classList.contains('active')) {
         selectedCustomIcon[modalType] = null;
+    } else {
+        // Clear search and reinitialize grid when opening
+        document.getElementById(`${modalType}IconSearch`).value = '';
+        initializeIconGrid(modalType);
     }
 }
 
-function initializeIconGrid(modalType) {
+function initializeIconGrid(modalType, searchTerm = '') {
     const grid = document.getElementById(`${modalType}IconGrid`);
     grid.innerHTML = '';
     
-    popularIcons.forEach(iconClass => {
+    // Filter icons based on search term
+    const filteredIcons = searchTerm 
+        ? allBootstrapIcons.filter(iconClass => 
+            iconClass.toLowerCase().includes(searchTerm.toLowerCase()))
+        : allBootstrapIcons;
+    
+    // Limit to first 200 icons for performance
+    const iconsToShow = filteredIcons.slice(0, 200);
+    
+    iconsToShow.forEach(iconClass => {
         const iconOption = document.createElement('div');
         iconOption.className = 'icon-option';
         iconOption.innerHTML = `<i class="bi ${iconClass}"></i>`;
         iconOption.onclick = () => selectIcon(modalType, iconClass, iconOption);
         grid.appendChild(iconOption);
     });
+    
+    // Show count of filtered results
+    if (searchTerm && filteredIcons.length > 0) {
+        const countInfo = document.createElement('div');
+        countInfo.className = 'icon-count-info';
+        countInfo.textContent = `Showing ${iconsToShow.length} of ${filteredIcons.length} icons`;
+        grid.insertBefore(countInfo, grid.firstChild);
+    }
 }
 
 function selectIcon(modalType, iconClass, element) {
@@ -79,9 +147,10 @@ function selectIcon(modalType, iconClass, element) {
     // Add selection to clicked element
     element.classList.add('selected');
     
-    // Update preview
+    // Update preview with current color
     const preview = document.getElementById(`${modalType}IconPreview`);
-    preview.innerHTML = `<i class="bi ${iconClass}"></i>`;
+    const currentColor = selectedIconColor[modalType];
+    preview.innerHTML = `<i class="bi ${iconClass}" style="color: ${currentColor};"></i>`;
     
     // Store selection
     selectedCustomIcon[modalType] = iconClass;
@@ -93,6 +162,26 @@ document.addEventListener('click', (e) => {
         e.target.classList.remove('show');
     }
 });
+
+// Search icons function
+function searchIcons(modalType, searchTerm) {
+    initializeIconGrid(modalType, searchTerm);
+}
+
+// Color picker functions
+function updateIconPreviewColor(modalType, color) {
+    selectedIconColor[modalType] = color;
+    const preview = document.getElementById(`${modalType}IconPreview`);
+    const icon = preview.querySelector('i');
+    if (icon) {
+        icon.style.color = color;
+    }
+}
+
+function setIconColor(modalType, color) {
+    document.getElementById(`${modalType}IconColor`).value = color;
+    updateIconPreviewColor(modalType, color);
+}
 
 // Close modal with Escape key
 document.addEventListener('keydown', (e) => {
@@ -127,10 +216,11 @@ function handleIconError(img, domain, name, step = 1) {
     }
 }
 
-function createIconImg(url, name, customIcon = null) {
+function createIconImg(url, name, customIcon = null, iconColor = null) {
     // If custom icon is specified, use Bootstrap icon
     if (customIcon) {
-        return `<i class="bi ${customIcon}" style="font-size: 4rem; color: var(--accent-primary);"></i>`;
+        const color = iconColor || 'var(--accent-primary)';
+        return `<i class="bi ${customIcon}" style="font-size: 4rem; color: ${color};"></i>`;
     }
     
     try {
@@ -156,8 +246,9 @@ function addNewLink() {
     }
 
     const customIcon = selectedCustomIcon.add;
+    const iconColor = selectedIconColor.add;
     const linksGrid = document.getElementById('linksGrid');
-    const faviconHtml = createIconImg(url, name, customIcon);
+    const faviconHtml = createIconImg(url, name, customIcon, iconColor);
     
     const newLinkHTML = `
         <div class="link-card-container">
@@ -182,6 +273,7 @@ function addNewLink() {
     document.getElementById('addCustomIconToggle').classList.remove('active');
     document.getElementById('addIconSelector').classList.remove('show');
     selectedCustomIcon.add = null;
+    selectedIconColor.add = '#6366f1';
     closeAddModal();
 
     // Save to localStorage
@@ -208,6 +300,12 @@ function saveLinksToStorage() {
                 const iconClasses = icon.className.split(' ');
                 const bootstrapIcon = iconClasses.find(cls => cls.startsWith('bi-'));
                 linkData.customIcon = bootstrapIcon;
+                
+                // Save icon color if it's custom
+                const iconStyle = icon.style.color;
+                if (iconStyle && iconStyle !== 'var(--accent-primary)') {
+                    linkData.iconColor = iconStyle;
+                }
             }
             
             links.push(linkData);
@@ -236,7 +334,7 @@ function loadLinksFromStorage() {
             
             // Check if it has a custom icon
             if (link.customIcon) {
-                faviconHtml = createIconImg(link.url, link.name, link.customIcon);
+                faviconHtml = createIconImg(link.url, link.name, link.customIcon, link.iconColor);
             } else {
                 // Always use createIconImg for consistent styling and fallback behavior
                 faviconHtml = createIconImg(link.url, link.name);
@@ -278,6 +376,7 @@ function editLink(button) {
     document.getElementById('editCustomIconToggle').classList.remove('active');
     document.getElementById('editIconSelector').classList.remove('show');
     selectedCustomIcon.edit = null;
+    selectedIconColor.edit = '#6366f1';
     
     // Check if it has a custom Bootstrap icon
     if (icon && icon.className.includes('bi-')) {
@@ -290,8 +389,13 @@ function editLink(button) {
             document.getElementById('editIconSelector').classList.add('show');
             selectedCustomIcon.edit = bootstrapIcon;
             
+            // Get icon color
+            const iconColor = icon.style.color || '#6366f1';
+            selectedIconColor.edit = iconColor;
+            document.getElementById('editIconColor').value = iconColor;
+            
             // Update preview
-            document.getElementById('editIconPreview').innerHTML = `<i class="bi ${bootstrapIcon}"></i>`;
+            document.getElementById('editIconPreview').innerHTML = `<i class="bi ${bootstrapIcon}" style="color: ${iconColor};"></i>`;
         }
     }
     
@@ -319,7 +423,8 @@ function saveEditedLink() {
         
         // Update favicon with custom icon if selected
         const customIcon = selectedCustomIcon.edit;
-        const faviconHtml = createIconImg(url, name, customIcon);
+        const iconColor = selectedIconColor.edit;
+        const faviconHtml = createIconImg(url, name, customIcon, iconColor);
         iconContainer.innerHTML = faviconHtml;
         
         // Save to localStorage
@@ -329,6 +434,7 @@ function saveEditedLink() {
         document.getElementById('editCustomIconToggle').classList.remove('active');
         document.getElementById('editIconSelector').classList.remove('show');
         selectedCustomIcon.edit = null;
+        selectedIconColor.edit = '#6366f1';
         closeEditModal();
         
         currentEditingCard = null;
@@ -347,5 +453,11 @@ function deleteLink() {
     }
 }
 
-// Load saved links when page loads
-document.addEventListener('DOMContentLoaded', loadLinksFromStorage);
+// Initialize icons and load saved links when page loads
+document.addEventListener('DOMContentLoaded', async function() {
+    // Load Bootstrap icons dynamically
+    allBootstrapIcons = await loadBootstrapIcons();
+    
+    // Load saved links
+    loadLinksFromStorage();
+});

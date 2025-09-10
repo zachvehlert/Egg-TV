@@ -88,6 +88,23 @@
                             <div class="icon-preview" id="addIconPreview">
                                 <i class="bi bi-link-45deg"></i>
                             </div>
+                            <div class="icon-color-picker">
+                                <label for="addIconColor" class="form-label">Icon Color</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" class="color-picker" id="addIconColor" value="#6366f1" onchange="updateIconPreviewColor('add', this.value)">
+                                    <div class="color-presets">
+                                        <button type="button" class="color-preset" style="background: #6366f1" onclick="setIconColor('add', '#6366f1')" title="Default"></button>
+                                        <button type="button" class="color-preset" style="background: #ef4444" onclick="setIconColor('add', '#ef4444')" title="Red"></button>
+                                        <button type="button" class="color-preset" style="background: #10b981" onclick="setIconColor('add', '#10b981')" title="Green"></button>
+                                        <button type="button" class="color-preset" style="background: #f59e0b" onclick="setIconColor('add', '#f59e0b')" title="Yellow"></button>
+                                        <button type="button" class="color-preset" style="background: #8b5cf6" onclick="setIconColor('add', '#8b5cf6')" title="Purple"></button>
+                                        <button type="button" class="color-preset" style="background: #06b6d4" onclick="setIconColor('add', '#06b6d4')" title="Cyan"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="icon-search">
+                                <input type="text" class="form-control" id="addIconSearch" placeholder="Search icons..." onkeyup="searchIcons('add', this.value)">
+                            </div>
                             <div class="icon-grid" id="addIconGrid"></div>
                         </div>
                     </div>
@@ -134,6 +151,23 @@
                             <label class="icon-selector-label">Choose an icon:</label>
                             <div class="icon-preview" id="editIconPreview">
                                 <i class="bi bi-link-45deg"></i>
+                            </div>
+                            <div class="icon-color-picker">
+                                <label for="editIconColor" class="form-label">Icon Color</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" class="color-picker" id="editIconColor" value="#6366f1" onchange="updateIconPreviewColor('edit', this.value)">
+                                    <div class="color-presets">
+                                        <button type="button" class="color-preset" style="background: #6366f1" onclick="setIconColor('edit', '#6366f1')" title="Default"></button>
+                                        <button type="button" class="color-preset" style="background: #ef4444" onclick="setIconColor('edit', '#ef4444')" title="Red"></button>
+                                        <button type="button" class="color-preset" style="background: #10b981" onclick="setIconColor('edit', '#10b981')" title="Green"></button>
+                                        <button type="button" class="color-preset" style="background: #f59e0b" onclick="setIconColor('edit', '#f59e0b')" title="Yellow"></button>
+                                        <button type="button" class="color-preset" style="background: #8b5cf6" onclick="setIconColor('edit', '#8b5cf6')" title="Purple"></button>
+                                        <button type="button" class="color-preset" style="background: #06b6d4" onclick="setIconColor('edit', '#06b6d4')" title="Cyan"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="icon-search">
+                                <input type="text" class="form-control" id="editIconSearch" placeholder="Search icons..." onkeyup="searchIcons('edit', this.value)">
                             </div>
                             <div class="icon-grid" id="editIconGrid"></div>
                         </div>
