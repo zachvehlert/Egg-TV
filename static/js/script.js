@@ -1,6 +1,30 @@
 // Dynamic Bootstrap Icons array - will be populated from CSS
 let allBootstrapIcons = [];
 
+// API Helper Functions
+async function apiRequest(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API Request failed:', error);
+        alert(`Error: ${error.message}`);
+        throw error;
+    }
+}
+
 // Function to dynamically extract Bootstrap icon classes from CSS
 async function loadBootstrapIcons() {
     try {
@@ -236,7 +260,7 @@ function createIconImg(url, name, customIcon = null, iconColor = null) {
     }
 }
 
-function addNewLink() {
+async function addNewLink() {
     const name = document.getElementById('linkName').value.trim();
     const url = document.getElementById('linkUrl').value.trim();
 
@@ -247,101 +271,60 @@ function addNewLink() {
 
     const customIcon = selectedCustomIcon.add;
     const iconColor = selectedIconColor.add;
-    const linksGrid = document.getElementById('linksGrid');
-    const faviconHtml = createIconImg(url, name, customIcon, iconColor);
     
-    const newLinkHTML = `
-        <div class="link-card-container">
-            <a href="${url}" target="_blank" class="link-card">
-                <div class="link-icon">
-                    ${faviconHtml}
-                </div>
-                <h5 class="link-title">${name}</h5>
-            </a>
-            <button class="edit-button" onclick="editLink(this)" title="Edit">
-                <svg class="icon" viewBox="0 0 20 20">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                </svg>
-            </button>
-        </div>
-    `;
-
-    linksGrid.insertAdjacentHTML('beforeend', newLinkHTML);
-
-    // Clear form and close modal
-    document.getElementById('addLinkForm').reset();
-    document.getElementById('addCustomIconToggle').classList.remove('active');
-    document.getElementById('addIconSelector').classList.remove('show');
-    selectedCustomIcon.add = null;
-    selectedIconColor.add = '#6366f1';
-    closeAddModal();
-
-    // Save to localStorage
-    saveLinksToStorage();
-}
-
-function saveLinksToStorage() {
-    const links = [];
-    const linkCards = document.querySelectorAll('#linksGrid .link-card-container');
-    
-    linkCards.forEach(card => {
-        const link = card.querySelector('a');
-        const title = card.querySelector('.link-title');
-        const icon = card.querySelector('.link-icon i');
+    try {
+        // Create link via API
+        const linkData = {
+            name: name,
+            url: url,
+            custom_icon: customIcon,
+            icon_color: iconColor
+        };
         
-        if (link && title) {
-            const linkData = {
-                name: title.textContent,
-                url: link.href
-            };
-            
-            // Check if it's using a custom Bootstrap icon
-            if (icon && icon.className.includes('bi-')) {
-                const iconClasses = icon.className.split(' ');
-                const bootstrapIcon = iconClasses.find(cls => cls.startsWith('bi-'));
-                linkData.customIcon = bootstrapIcon;
-                
-                // Save icon color if it's custom
-                const iconStyle = icon.style.color;
-                if (iconStyle && iconStyle !== 'var(--accent-primary)') {
-                    linkData.iconColor = iconStyle;
-                }
-            }
-            
-            links.push(linkData);
-        }
-    });
-    
-    localStorage.setItem('tvBoxLinks', JSON.stringify(links));
+        await apiRequest('/api/links', {
+            method: 'POST',
+            body: JSON.stringify(linkData)
+        });
+
+        // Clear form and close modal
+        document.getElementById('addLinkForm').reset();
+        document.getElementById('addCustomIconToggle').classList.remove('active');
+        document.getElementById('addIconSelector').classList.remove('show');
+        selectedCustomIcon.add = null;
+        selectedIconColor.add = '#6366f1';
+        closeAddModal();
+
+        // Reload links from API to show the new link
+        await loadLinksFromAPI();
+    } catch (error) {
+        console.error('Failed to add link:', error);
+    }
 }
 
-function loadLinksFromStorage() {
-    const savedLinks = localStorage.getItem('tvBoxLinks');
-    if (savedLinks) {
-        const links = JSON.parse(savedLinks);
+// saveLinksToStorage is no longer needed - API handles persistence automatically
+
+async function loadLinksFromAPI() {
+    try {
+        const links = await apiRequest('/api/links');
         const linksGrid = document.getElementById('linksGrid');
         
-        // Clear existing links except the first two (YouTube and Netflix)
-        const existingLinks = linksGrid.querySelectorAll('.link-card-container');
-        for (let i = 2; i < existingLinks.length; i++) {
-            existingLinks[i].remove();
-        }
+        // Clear existing links
+        linksGrid.innerHTML = '';
         
-        // Add saved links (skip first two which are defaults)
-        for (let i = 2; i < links.length; i++) {
-            const link = links[i];
+        // Add all links from API
+        links.forEach(link => {
             let faviconHtml;
             
             // Check if it has a custom icon
-            if (link.customIcon) {
-                faviconHtml = createIconImg(link.url, link.name, link.customIcon, link.iconColor);
+            if (link.custom_icon) {
+                faviconHtml = createIconImg(link.url, link.name, link.custom_icon, link.icon_color);
             } else {
                 // Always use createIconImg for consistent styling and fallback behavior
                 faviconHtml = createIconImg(link.url, link.name);
             }
             
             const newLinkHTML = `
-                <div class="link-card-container">
+                <div class="link-card-container" data-link-id="${link.id}">
                     <a href="${link.url}" target="_blank" class="link-card">
                         <div class="link-icon">
                             ${faviconHtml}
@@ -356,7 +339,9 @@ function loadLinksFromStorage() {
                 </div>
             `;
             linksGrid.insertAdjacentHTML('beforeend', newLinkHTML);
-        }
+        });
+    } catch (error) {
+        console.error('Failed to load links:', error);
     }
 }
 
@@ -403,7 +388,7 @@ function editLink(button) {
     openEditModal();
 }
 
-function saveEditedLink() {
+async function saveEditedLink() {
     const name = document.getElementById('editLinkName').value.trim();
     const url = document.getElementById('editLinkUrl').value.trim();
 
@@ -413,43 +398,61 @@ function saveEditedLink() {
     }
 
     if (currentEditingCard) {
-        // Update the link
-        const link = currentEditingCard.querySelector('a');
-        const title = currentEditingCard.querySelector('.link-title');
-        const iconContainer = currentEditingCard.querySelector('.link-icon');
-        
-        link.href = url;
-        title.textContent = name;
-        
-        // Update favicon with custom icon if selected
+        const linkId = currentEditingCard.dataset.linkId;
         const customIcon = selectedCustomIcon.edit;
         const iconColor = selectedIconColor.edit;
-        const faviconHtml = createIconImg(url, name, customIcon, iconColor);
-        iconContainer.innerHTML = faviconHtml;
         
-        // Save to localStorage
-        saveLinksToStorage();
-        
-        // Close modal and reset state
-        document.getElementById('editCustomIconToggle').classList.remove('active');
-        document.getElementById('editIconSelector').classList.remove('show');
-        selectedCustomIcon.edit = null;
-        selectedIconColor.edit = '#6366f1';
-        closeEditModal();
-        
-        currentEditingCard = null;
+        try {
+            // Update link via API
+            const linkData = {
+                name: name,
+                url: url,
+                custom_icon: customIcon,
+                icon_color: iconColor
+            };
+            
+            await apiRequest(`/api/links/${linkId}`, {
+                method: 'PUT',
+                body: JSON.stringify(linkData)
+            });
+
+            // Close modal and reset state
+            document.getElementById('editCustomIconToggle').classList.remove('active');
+            document.getElementById('editIconSelector').classList.remove('show');
+            selectedCustomIcon.edit = null;
+            selectedIconColor.edit = '#6366f1';
+            closeEditModal();
+            
+            currentEditingCard = null;
+
+            // Reload links from API to show the updated link
+            await loadLinksFromAPI();
+        } catch (error) {
+            console.error('Failed to update link:', error);
+        }
     }
 }
 
-function deleteLink() {
+async function deleteLink() {
     if (currentEditingCard && confirm('Are you sure you want to delete this link?')) {
-        currentEditingCard.remove();
-        saveLinksToStorage();
+        const linkId = currentEditingCard.dataset.linkId;
         
-        // Close modal
-        closeEditModal();
-        
-        currentEditingCard = null;
+        try {
+            // Delete link via API
+            await apiRequest(`/api/links/${linkId}`, {
+                method: 'DELETE'
+            });
+
+            // Close modal
+            closeEditModal();
+            
+            currentEditingCard = null;
+
+            // Reload links from API to show the updated list
+            await loadLinksFromAPI();
+        } catch (error) {
+            console.error('Failed to delete link:', error);
+        }
     }
 }
 
@@ -458,6 +461,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load Bootstrap icons dynamically
     allBootstrapIcons = await loadBootstrapIcons();
     
-    // Load saved links
-    loadLinksFromStorage();
+    // Load links from API
+    await loadLinksFromAPI();
 });
