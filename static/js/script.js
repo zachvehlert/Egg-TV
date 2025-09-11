@@ -340,6 +340,9 @@ async function loadLinksFromAPI() {
             `;
             linksGrid.insertAdjacentHTML('beforeend', newLinkHTML);
         });
+        
+        // Also populate the toolbar with links
+        populateToolbarLinks(links);
     } catch (error) {
         console.error('Failed to load links:', error);
     }
@@ -456,10 +459,120 @@ async function deleteLink() {
     }
 }
 
+// Toolbar functionality
+let toolbarTimeout;
+let isToolbarVisible = false;
+
+function initializeToolbar() {
+    const toolbar = document.getElementById('leftToolbar');
+    const triggerZone = document.getElementById('mouseTriggerZone');
+    
+    // Mouse enter trigger zone
+    triggerZone.addEventListener('mouseenter', () => {
+        showToolbar();
+    });
+    
+    // Mouse leave toolbar
+    toolbar.addEventListener('mouseleave', () => {
+        hideToolbar();
+    });
+    
+    // Keep toolbar visible when hovering over it
+    toolbar.addEventListener('mouseenter', () => {
+        clearTimeout(toolbarTimeout);
+        showToolbar();
+    });
+}
+
+function showToolbar() {
+    clearTimeout(toolbarTimeout);
+    const toolbar = document.getElementById('leftToolbar');
+    toolbar.classList.add('show');
+    isToolbarVisible = true;
+}
+
+function hideToolbar() {
+    toolbarTimeout = setTimeout(() => {
+        const toolbar = document.getElementById('leftToolbar');
+        toolbar.classList.remove('show');
+        isToolbarVisible = false;
+    }, 300); // Small delay to prevent flickering
+}
+
+function goHome() {
+    // Check if we're already on the home page
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+        // If already home, just scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        // Navigate to home page
+        window.location.href = '/';
+    }
+    hideToolbar();
+}
+
+function populateToolbarLinks(links) {
+    const toolbarLinks = document.getElementById('toolbarLinks');
+    toolbarLinks.innerHTML = '';
+    
+    links.forEach(link => {
+        const toolbarLink = document.createElement('a');
+        toolbarLink.className = 'toolbar-link';
+        toolbarLink.href = link.url;
+        toolbarLink.target = '_blank';
+        toolbarLink.title = link.name;
+        
+        // Create icon HTML
+        let iconHtml;
+        if (link.custom_icon) {
+            const color = link.icon_color || 'var(--accent-primary)';
+            iconHtml = `<i class="bi ${link.custom_icon}" style="color: ${color};"></i>`;
+        } else {
+            try {
+                const urlObj = new URL(link.url);
+                const domain = urlObj.hostname;
+                iconHtml = `<img src="https://logo.clearbit.com/${domain}" alt="${link.name}" onerror="handleToolbarIconError(this, '${domain}', '${link.name}', 1)">`;
+            } catch (e) {
+                iconHtml = `<svg viewBox="0 0 20 20" style="width: 100%; height: 100%; color: var(--accent-primary);"><path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/></svg>`;
+            }
+        }
+        
+        toolbarLink.innerHTML = `
+            <div class="toolbar-link-icon">
+                ${iconHtml}
+            </div>
+            <div class="toolbar-link-title">${link.name}</div>
+        `;
+        
+        toolbarLinks.appendChild(toolbarLink);
+    });
+}
+
+function handleToolbarIconError(img, domain, name, step = 1) {
+    const baseStyle = "width: 100%; height: 100%; object-fit: contain; border-radius: 4px;";
+    
+    if (step === 1) {
+        img.src = `https://${domain}/apple-touch-icon.png`;
+        img.style.cssText = baseStyle;
+        img.onerror = () => handleToolbarIconError(img, domain, name, 2);
+    } else if (step === 2) {
+        img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+        img.style.cssText = baseStyle;
+        img.onerror = () => handleToolbarIconError(img, domain, name, 3);
+    } else {
+        img.outerHTML = `<svg viewBox="0 0 20 20" style="width: 100%; height: 100%; color: var(--accent-primary);">
+            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/>
+        </svg>`;
+    }
+}
+
 // Initialize icons and load saved links when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     // Load Bootstrap icons dynamically
     allBootstrapIcons = await loadBootstrapIcons();
+    
+    // Initialize toolbar functionality
+    initializeToolbar();
     
     // Load links from API
     await loadLinksFromAPI();
