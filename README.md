@@ -1,25 +1,132 @@
 # TV Box
 
-A highly configurable smart TV web application designed to run on a Raspberry Pi 5 with fullpage OS.
+A highly configurable smart TV web application with browser extension support, designed to run on a Raspberry Pi 5 with fullpage OS.
 
 ## Overview
 
-TV Box is a streaming-focused web application that provides a customizable dashboard of links to various streaming services and websites. Think of it as a simplified, web-based alternative to Apple TV or other streaming devices.
+TV Box is a streaming-focused web application that provides a customizable dashboard of links to various streaming services and websites. Think of it as a simplified, web-based alternative to Apple TV or other streaming devices. It now includes a browser extension for easy access to your links from any web browser.
 
 ## Features
 
-- **Link Management**: Add, delete, and edit webpage links with custom icons
-- **Multi-User Support**: Profile system allowing multiple users to maintain their own personalized dashboards
-- **Network Detection**: Automatically detects WiFi connectivity on startup and provides network configuration interface when disconnected
-- **Streaming Focus**: Designed specifically for streaming services (YouTube, Netflix, etc.) rather than local file playback
-- **Custom Icons**: Support for custom icons alongside automatic icon retrieval via API
+- **Link Management**: Add, delete, and edit webpage links with custom icons and colors
+- **Browser Extension**: Chrome/Firefox extension for quick access to your TV Box links
+- **Custom Icons**: Support for Bootstrap icons with custom colors, plus automatic favicon retrieval
+- **API Endpoints**: REST API for programmatic access and browser extension integration
+- **CORS Support**: Cross-origin support for browser extensions and external applications
+- **SQLite Database**: Persistent storage for all your links and settings
+- **Responsive Design**: Works on TV screens, desktop browsers, and mobile devices
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.13+
+- UV package manager (recommended) or pip
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd tv-box
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   # Using UV (recommended)
+   uv install
+   
+   # Or using pip
+   pip install -r requirements.txt
+   ```
+
+3. **Run the application:**
+   ```bash
+   # Using UV
+   uv run main.py
+   
+   # Or using python directly
+   python main.py
+   ```
+
+4. **Access the application:**
+   Open your browser and navigate to `http://localhost:5000`
+
+### Browser Extension Setup
+
+The TV Box browser extension allows you to access your links directly from your browser toolbar.
+
+#### Installation
+
+1. **Chrome/Chromium:**
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in top right)
+   - Click "Load unpacked"
+   - Select the `extension/` directory from your TV Box installation
+   - The TV Box extension should now appear in your toolbar
+
+2. **Firefox:**
+   - Open Firefox and navigate to `about:debugging`
+   - Click "This Firefox"
+   - Click "Load Temporary Add-on"
+   - Select the `manifest.json` file from the `extension/` directory
+
+#### Configuration
+
+1. **Start your TV Box server** (it must be running for the extension to work)
+2. **Click the TV Box extension icon** in your browser toolbar
+3. **Configure server URL** if different from `http://localhost:5000`
+4. **Access your links** directly from the extension popup
+
+## API Endpoints
+
+TV Box provides several API endpoints for integration:
+
+- `GET /api/links` - Get all links
+- `POST /api/links` - Create a new link
+- `PUT /api/links/<id>` - Update a link
+- `DELETE /api/links/<id>` - Delete a link
+- `GET /api/extension/links` - Get links formatted for browser extension
+- `GET /api/extension/health` - Health check for browser extension
+
+## Development
+
+### Dependencies
+
+- **Flask** - Web framework
+- **Flask-CORS** - Cross-origin support for browser extension
+- **Flask-SQLAlchemy** - Database ORM
+- **Pillow** - Image processing
+
+### File Structure
+
+```
+tv-box/
+├── main.py              # Main Flask application
+├── models.py            # Database models
+├── templates/           # HTML templates
+├── static/             # CSS, JavaScript, images
+├── extension/          # Browser extension files
+│   ├── manifest.json   # Extension manifest
+│   ├── popup.html      # Extension popup interface
+│   └── js/            # Extension JavaScript files
+├── instance/          # SQLite database location
+└── README.md          # This file
+```
 
 ## Target Platform
 
-- **Hardware**: Raspberry Pi 5
-- **OS**: Fullpage OS
-- **Purpose**: Streaming box functionality similar to Apple TV
+- **Primary**: Raspberry Pi 5 with Fullpage OS
+- **Secondary**: Any system running Python 3.13+ (development/testing)
+- **Browser Extension**: Chrome, Firefox, and other Chromium-based browsers
 
 ## Usage
 
-This application is intended to be used as a full-screen interface on a TV, providing easy access to various streaming platforms and web services through a clean, user-friendly interface.
+### TV Interface
+The application is intended to be used as a full-screen interface on a TV, providing easy access to various streaming platforms and web services through a clean, user-friendly interface.
+
+### Desktop/Mobile
+Access your links through the web interface on any device with a modern web browser.
+
+### Browser Extension
+Quick access to your TV Box links from any website through the browser extension popup.
