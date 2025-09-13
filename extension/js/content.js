@@ -47,10 +47,23 @@
                         </svg>
                         TV Box
                     </button>
+                    <div id="tvbox-toolbar-nav-buttons">
+                        <button id="tvbox-toolbar-back-btn" title="Go Back">
+                            <svg viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <button id="tvbox-toolbar-forward-btn" title="Go Forward">
+                            <svg viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div id="tvbox-toolbar-divider"></div>
                     <div id="tvbox-toolbar-links">
                         <div id="tvbox-loading-indicator">Loading links...</div>
                     </div>
+                    <button id="tvbox-toolbar-add-btn" class="tvbox-add-website-btn">Add This Website</button>
                 </div>
             </div>
             <div id="tvbox-mouse-trigger-zone"></div>
@@ -124,7 +137,7 @@
         const linksHTML = links.map(link => {
             const iconHTML = createIconHTML(link);
             return `
-                <a href="${link.url}" target="_blank" class="tvbox-toolbar-link" title="${link.name}">
+                <a href="${link.url}" class="tvbox-toolbar-link" title="${link.name}">
                     <div class="tvbox-toolbar-link-icon">
                         ${iconHTML}
                     </div>
@@ -157,11 +170,111 @@
         }, 300); // Small delay to prevent flickering
     }
     
+    // Add current website to the database
+    async function addCurrentWebsite() {
+        const currentUrl = window.location.href;
+        const pageTitle = document.title || window.location.hostname;
+        
+        // Show loading state
+        const addBtn = document.getElementById('tvbox-toolbar-add-btn');
+        if (addBtn) {
+            addBtn.disabled = true;
+            addBtn.textContent = 'Adding...';
+        }
+        
+        try {
+            // Check if URL already exists by comparing with current links
+            const existingLinks = await fetchLinks();
+            const urlExists = existingLinks.some(link => link.url === currentUrl);
+            
+            if (urlExists) {
+                showNotification('Website already exists in your list!', 'info');
+                return;
+            }
+            
+            // Add the website via background script
+            const response = await chrome.runtime.sendMessage({
+                type: 'addWebsite',
+                serverUrl: config.serverUrl,
+                websiteData: {
+                    name: pageTitle,
+                    url: currentUrl
+                }
+            });
+            
+            if (response.success) {
+                showNotification('Website added successfully!', 'success');
+                // Clear cache to force refresh of links
+                linksCache = null;
+                lastFetchTime = 0;
+                // Reload links to show the new addition
+                await loadLinks();
+            } else {
+                showNotification(`Failed to add website: ${response.error}`, 'error');
+            }
+        } catch (error) {
+            console.error('TV Box: Failed to add website:', error);
+            showNotification(`Error: ${error.message}`, 'error');
+        } finally {
+            // Restore button state
+            if (addBtn) {
+                addBtn.disabled = false;
+                addBtn.textContent = 'Add This Website';
+            }
+        }
+    }
+    
+    // Show notification to user
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.id = 'tvbox-notification';
+        notification.className = `tvbox-notification tvbox-notification-${type}`;
+        notification.textContent = message;
+        
+        // Style the notification
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto-hide after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+    
     // Initialize toolbar event handlers
     function initializeToolbarEvents() {
         const toolbar = document.getElementById('tvbox-toolbar');
         const triggerZone = document.getElementById('tvbox-mouse-trigger-zone');
         const homeBtn = document.getElementById('tvbox-toolbar-home-btn');
+        const backBtn = document.getElementById('tvbox-toolbar-back-btn');
+        const forwardBtn = document.getElementById('tvbox-toolbar-forward-btn');
+        const addBtn = document.getElementById('tvbox-toolbar-add-btn');
         
         if (triggerZone) {
             triggerZone.addEventListener('mouseenter', showToolbar);
@@ -178,8 +291,31 @@
         if (homeBtn) {
             homeBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.open(config.serverUrl, '_blank');
+                window.location.href = config.serverUrl;
                 hideToolbar();
+            });
+        }
+        
+        if (backBtn) {
+            backBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.history.back();
+                hideToolbar();
+            });
+        }
+        
+        if (forwardBtn) {
+            forwardBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.history.forward();
+                hideToolbar();
+            });
+        }
+        
+        if (addBtn) {
+            addBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await addCurrentWebsite();
             });
         }
     }

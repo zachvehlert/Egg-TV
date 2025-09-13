@@ -72,6 +72,42 @@
     box-shadow: var(--tvbox-shadow-lg), var(--tvbox-shadow-glow) !important;
 }
 
+#tvbox-toolbar-nav-buttons {
+    display: flex !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1rem !important;
+}
+
+#tvbox-toolbar-back-btn,
+#tvbox-toolbar-forward-btn {
+    flex: 1 !important;
+    background: var(--tvbox-bg-card) !important;
+    border: 1px solid var(--tvbox-border-color) !important;
+    color: var(--tvbox-text-primary) !important;
+    padding: 0.75rem !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: inherit !important;
+}
+
+#tvbox-toolbar-back-btn:hover,
+#tvbox-toolbar-forward-btn:hover {
+    background: var(--tvbox-bg-card-hover) !important;
+    border-color: var(--tvbox-accent-primary) !important;
+    transform: translateY(-1px) !important;
+}
+
+#tvbox-toolbar-back-btn svg,
+#tvbox-toolbar-forward-btn svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    fill: currentColor !important;
+}
+
 #tvbox-toolbar-divider {
     height: 1px !important;
     background: var(--tvbox-border-color) !important;
@@ -184,6 +220,46 @@
     #tvbox-toolbar-content {
         padding: 1.5rem 0.75rem !important;
     }
+}
+
+/* Add Website Button */
+.tvbox-add-website-btn {
+    width: 100% !important;
+    background: var(--tvbox-bg-card) !important;
+    border: 1px solid var(--tvbox-border-color) !important;
+    color: var(--tvbox-text-primary) !important;
+    padding: 0.875rem !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-top: 1rem !important;
+    font-family: inherit !important;
+    text-align: center !important;
+}
+
+.tvbox-add-website-btn:hover {
+    background: var(--tvbox-bg-card-hover) !important;
+    border-color: var(--tvbox-accent-primary) !important;
+    transform: translateY(-1px) !important;
+    color: var(--tvbox-accent-primary) !important;
+}
+
+.tvbox-add-website-btn:active {
+    transform: translateY(0) !important;
+}
+
+.tvbox-add-website-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+.tvbox-add-website-btn:disabled:hover {
+    background: var(--tvbox-bg-card) !important;
+    border-color: var(--tvbox-border-color) !important;
+    color: var(--tvbox-text-primary) !important;
 }
 
 /* Bootstrap Icons are handled via fallback SVGs in JavaScript */

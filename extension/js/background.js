@@ -81,6 +81,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
             return true;
             
+        case 'addWebsite':
+            addWebsiteToServer(message.serverUrl, message.websiteData).then(result => {
+                sendResponse(result);
+            });
+            return true;
+            
         default:
             sendResponse({ error: 'Unknown message type' });
     }
@@ -152,6 +158,40 @@ async function fetchLinksFromServer(serverUrl) {
         return {
             success: false,
             error: `Failed to fetch links: ${error.message}`
+        };
+    }
+}
+
+// Add website to server
+async function addWebsiteToServer(serverUrl, websiteData) {
+    try {
+        const response = await fetch(`${serverUrl}/api/links`, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(websiteData)
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: true,
+                link: data
+            };
+        } else {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            return {
+                success: false,
+                error: errorData.error || `Server returned ${response.status}: ${response.statusText}`
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: `Failed to add website: ${error.message}`
         };
     }
 }

@@ -325,7 +325,7 @@ async function loadLinksFromAPI() {
             
             const newLinkHTML = `
                 <div class="link-card-container" data-link-id="${link.id}">
-                    <a href="${link.url}" target="_blank" class="link-card">
+                    <a href="${link.url}" class="link-card">
                         <div class="link-icon">
                             ${faviconHtml}
                         </div>
