@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
-from models import db, Link
+from models import db, Link, Setting
 import os
 
 app = Flask(__name__)
@@ -139,6 +139,59 @@ def get_extension_links():
             'links': []
         }), 500
 
+# Settings API Endpoints
+
+@app.route('/api/settings', methods=['GET'])
+def get_settings():
+    """Get all settings"""
+    try:
+        settings = Setting.query.all()
+        return jsonify({setting.key: setting.value for setting in settings})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/<string:key>', methods=['GET'])
+def get_setting(key):
+    """Get a specific setting by key"""
+    try:
+        setting = Setting.query.filter_by(key=key).first()
+        if setting:
+            return jsonify({'key': setting.key, 'value': setting.value})
+        else:
+            # Return default values for known settings
+            defaults = {
+                'search_engine_url': 'https://www.google.com/search?q=',
+                'accent_color': '#f8a5c2',
+                'background_theme': '{"primary":"#111827","secondary":"#1f2937","card":"#374151"}'
+            }
+            return jsonify({'key': key, 'value': defaults.get(key, '')})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/settings/<string:key>', methods=['PUT'])
+def update_setting(key):
+    """Update or create a setting"""
+    try:
+        data = request.get_json()
+
+        if not data or 'value' not in data:
+            return jsonify({'error': 'Value is required'}), 400
+
+        setting = Setting.query.filter_by(key=key).first()
+
+        if setting:
+            setting.value = data['value']
+        else:
+            setting = Setting(key=key, value=data['value'])
+            db.session.add(setting)
+
+        db.session.commit()
+
+        return jsonify({'key': setting.key, 'value': setting.value})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/extension/health', methods=['GET'])
 def extension_health():
     """Health check endpoint for browser extension"""
@@ -147,6 +200,57 @@ def extension_health():
         'server': 'tv-box',
         'version': '1.0'
     })
+
+@app.route('/api/extension/search-url', methods=['GET'])
+def get_extension_search_url():
+    """Get search engine URL for extension use"""
+    try:
+        setting = Setting.query.filter_by(key='search_engine_url').first()
+        search_url = setting.value if setting else 'https://www.google.com/search?q='
+        return jsonify({
+            'success': True,
+            'search_url': search_url
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'search_url': 'https://www.google.com/search?q='
+        }), 500
+
+@app.route('/api/extension/accent-color', methods=['GET'])
+def get_extension_accent_color():
+    """Get accent color for extension use"""
+    try:
+        setting = Setting.query.filter_by(key='accent_color').first()
+        accent_color = setting.value if setting else '#f8a5c2'
+        return jsonify({
+            'success': True,
+            'accent_color': accent_color
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'accent_color': '#f8a5c2'
+        }), 500
+
+@app.route('/api/extension/background-theme', methods=['GET'])
+def get_extension_background_theme():
+    """Get background theme for extension use"""
+    try:
+        setting = Setting.query.filter_by(key='background_theme').first()
+        background_theme = setting.value if setting else '{"primary":"#111827","secondary":"#1f2937","card":"#374151"}'
+        return jsonify({
+            'success': True,
+            'background_theme': background_theme
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'background_theme': '{"primary":"#111827","secondary":"#1f2937","card":"#374151"}'
+        }), 500
 
 
 def create_tables():

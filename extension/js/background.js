@@ -93,7 +93,31 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse(result);
             });
             return true;
-            
+
+        case 'getSearchUrl':
+            getSearchUrlFromServer(message.serverUrl).then(result => {
+                sendResponse(result);
+            });
+            return true;
+
+        case 'getAccentColor':
+            getAccentColorFromServer(message.serverUrl).then(result => {
+                sendResponse(result);
+            });
+            return true;
+
+        case 'getBackgroundTheme':
+            getBackgroundThemeFromServer(message.serverUrl).then(result => {
+                sendResponse(result);
+            });
+            return true;
+
+        case 'reloadExtension':
+            handleExtensionReload().then(result => {
+                sendResponse(result);
+            });
+            return true;
+
         default:
             sendResponse({ error: 'Unknown message type' });
     }
@@ -181,7 +205,7 @@ async function addWebsiteToServer(serverUrl, websiteData) {
             },
             body: JSON.stringify(websiteData)
         });
-        
+
         if (response.ok) {
             const data = await response.json();
             return {
@@ -199,6 +223,105 @@ async function addWebsiteToServer(serverUrl, websiteData) {
         return {
             success: false,
             error: `Failed to add website: ${error.message}`
+        };
+    }
+}
+
+// Get search URL from server
+async function getSearchUrlFromServer(serverUrl) {
+    try {
+        const response = await fetch(`${serverUrl}/api/extension/search-url`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: data.success,
+                search_url: data.search_url
+            };
+        } else {
+            return {
+                success: false,
+                error: `Server returned ${response.status}: ${response.statusText}`,
+                search_url: 'https://www.google.com'
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: `Failed to fetch search URL: ${error.message}`,
+            search_url: 'https://www.google.com'
+        };
+    }
+}
+
+// Get accent color from server
+async function getAccentColorFromServer(serverUrl) {
+    try {
+        const response = await fetch(`${serverUrl}/api/extension/accent-color`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: data.success,
+                accent_color: data.accent_color
+            };
+        } else {
+            return {
+                success: false,
+                error: `Server returned ${response.status}: ${response.statusText}`,
+                accent_color: '#f8a5c2'
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: `Failed to fetch accent color: ${error.message}`,
+            accent_color: '#f8a5c2'
+        };
+    }
+}
+
+// Get background theme from server
+async function getBackgroundThemeFromServer(serverUrl) {
+    try {
+        const response = await fetch(`${serverUrl}/api/extension/background-theme`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json',
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return {
+                success: data.success,
+                background_theme: data.background_theme
+            };
+        } else {
+            return {
+                success: false,
+                error: `Server returned ${response.status}: ${response.statusText}`,
+                background_theme: '{"primary":"#111827","secondary":"#1f2937","card":"#374151"}'
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: `Failed to fetch background theme: ${error.message}`,
+            background_theme: '{"primary":"#111827","secondary":"#1f2937","card":"#374151"}'
         };
     }
 }
@@ -230,6 +353,33 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 // Initialize badge on startup
 updateBadge();
+
+// Handle extension reload request
+async function handleExtensionReload() {
+    try {
+        // Clear any cached data in storage if needed
+        // (This depends on your specific caching needs)
+
+        // Force reload all tabs with the extension content script
+        const tabs = await chrome.tabs.query({});
+        const reloadPromises = tabs.map(tab => {
+            // Skip chrome:// and other special URLs
+            if (tab.url.startsWith('http://') || tab.url.startsWith('https://')) {
+                return chrome.tabs.reload(tab.id).catch(error => {
+                    console.log(`Egg TV: Couldn't reload tab ${tab.id}:`, error);
+                });
+            }
+            return Promise.resolve();
+        });
+
+        await Promise.all(reloadPromises);
+
+        return { success: true, message: 'Extension reloaded successfully' };
+    } catch (error) {
+        console.error('Egg TV: Error reloading extension:', error);
+        return { success: false, error: error.message };
+    }
+}
 
 // Tab limiting functionality - enforce single tab globally
 let currentTabId = null;

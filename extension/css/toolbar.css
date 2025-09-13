@@ -119,7 +119,8 @@
 }
 
 #tvbox-toolbar-back-btn,
-#tvbox-toolbar-forward-btn {
+#tvbox-toolbar-forward-btn,
+#tvbox-toolbar-reload-btn {
     flex: 1 !important;
     background: var(--tvbox-bg-card) !important;
     border: 1px solid var(--tvbox-border-color) !important;
@@ -138,14 +139,16 @@
 }
 
 #tvbox-toolbar-back-btn:hover,
-#tvbox-toolbar-forward-btn:hover {
+#tvbox-toolbar-forward-btn:hover,
+#tvbox-toolbar-reload-btn:hover {
     background: var(--tvbox-bg-card-hover) !important;
     border-color: var(--tvbox-accent-primary) !important;
     transform: translateY(-1px) !important;
 }
 
 #tvbox-toolbar-back-btn svg,
-#tvbox-toolbar-forward-btn svg {
+#tvbox-toolbar-forward-btn svg,
+#tvbox-toolbar-reload-btn svg {
     width: 16px !important;
     height: 16px !important;
     fill: currentColor !important;

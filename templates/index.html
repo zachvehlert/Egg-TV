@@ -28,8 +28,14 @@
     <div class="mouse-trigger-zone" id="mouseTriggerZone"></div>
     
     <div class="container">
-        <h1>Egg TV</h1>
-        
+        <div class="header-section">
+            <h1>Egg TV</h1>
+            <button class="settings-btn" onclick="openSettingsModal()" title="Settings">
+                <svg class="icon" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        </div>
 
         <!-- Links Grid -->
         <div class="links-grid" id="linksGrid">
@@ -78,15 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label for="editLinkUrl" class="form-label">URL</label>
-                        <div class="input-group">
-                            <input type="url" class="form-control" id="editLinkUrl" required>
-                            <a href="https://www.google.com" class="btn-secondary">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-                                </svg>
-                                Search
-                            </a>
-                        </div>
+                        <input type="url" class="form-control" id="editLinkUrl" required>
                     </div>
                 </form>
             </div>
@@ -97,6 +95,84 @@
             </div>
         </div>
     </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h5 class="modal-title">Settings</h5>
+                <button type="button" class="modal-close" onclick="closeSettingsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="searchEngineUrl" class="form-label">Search Engine URL</label>
+                        <input type="url" class="form-control" id="searchEngineUrl"
+                               placeholder="https://www.google.com/search?q="
+                               title="Enter the search engine URL. Use {query} as a placeholder for the search term.">
+                        <small class="form-text">The extension's "Search the Web" button will use this URL. Default: Google</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Accent Color</label>
+                        <div class="accent-color-picker">
+                            <div class="color-options" id="accentColorOptions">
+                                <div class="color-option" data-color="#f8a5c2" style="background-color: #f8a5c2;" title="Pink (Default)"></div>
+                                <div class="color-option" data-color="#6366f1" style="background-color: #6366f1;" title="Indigo"></div>
+                                <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;" title="Purple"></div>
+                                <div class="color-option" data-color="#06b6d4" style="background-color: #06b6d4;" title="Cyan"></div>
+                                <div class="color-option" data-color="#10b981" style="background-color: #10b981;" title="Emerald"></div>
+                                <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;" title="Amber"></div>
+                                <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;" title="Red"></div>
+                                <div class="color-option" data-color="#ec4899" style="background-color: #ec4899;" title="Pink"></div>
+                                <div class="color-option" data-color="#84cc16" style="background-color: #84cc16;" title="Lime"></div>
+                                <div class="color-option" data-color="#f97316" style="background-color: #f97316;" title="Orange"></div>
+                            </div>
+                        </div>
+                        <small class="form-text">Choose your preferred accent color for the interface</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Background Theme</label>
+                        <div class="background-color-picker">
+                            <div class="background-options" id="backgroundColorOptions">
+                                <div class="background-option" data-bg="#111827" data-secondary="#1f2937" data-card="#374151" title="Dark Blue (Default)">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%);"></div>
+                                    <span>Dark Blue</span>
+                                </div>
+                                <div class="background-option" data-bg="#0f0f0f" data-secondary="#1a1a1a" data-card="#262626" title="True Dark">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #262626 100%);"></div>
+                                    <span>True Dark</span>
+                                </div>
+                                <div class="background-option" data-bg="#1a1625" data-secondary="#2d2438" data-card="#3f334d" title="Purple Dark">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #1a1625 0%, #2d2438 50%, #3f334d 100%);"></div>
+                                    <span>Purple</span>
+                                </div>
+                                <div class="background-option" data-bg="#0c1220" data-secondary="#162033" data-card="#1e2a47" title="Navy Dark">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #0c1220 0%, #162033 50%, #1e2a47 100%);"></div>
+                                    <span>Navy</span>
+                                </div>
+                                <div class="background-option" data-bg="#0a1f0f" data-secondary="#1a2f1f" data-card="#2a3f2f" title="Forest Green">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #0a1f0f 0%, #1a2f1f 50%, #2a3f2f 100%);"></div>
+                                    <span>Forest</span>
+                                </div>
+                                <div class="background-option" data-bg="#1f1a0a" data-secondary="#2f261a" data-card="#3f342a" title="Warm Yellow">
+                                    <div class="bg-preview" style="background: linear-gradient(135deg, #1f1a0a 0%, #2f261a 50%, #3f342a 100%);"></div>
+                                    <span>Amber</span>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="form-text">Choose your preferred background theme</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                <button type="button" class="btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

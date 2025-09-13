@@ -36,6 +36,196 @@ function closeEditModal() {
     document.getElementById('editLinkModal').classList.remove('show');
 }
 
+// Settings modal functionality
+function openSettingsModal() {
+    document.getElementById('settingsModal').classList.add('show');
+    loadSettings();
+    initializeColorPicker();
+}
+
+function closeSettingsModal() {
+    document.getElementById('settingsModal').classList.remove('show');
+}
+
+let selectedAccentColor = '#f8a5c2'; // Default pink
+let selectedBackgroundTheme = { primary: '#111827', secondary: '#1f2937', card: '#374151' }; // Default theme
+
+async function loadSettings() {
+    try {
+        // Load search engine URL
+        const searchResponse = await apiRequest('/api/settings/search_engine_url');
+        document.getElementById('searchEngineUrl').value = searchResponse.value || 'https://www.google.com/search?q=';
+
+        // Load accent color
+        const colorResponse = await apiRequest('/api/settings/accent_color');
+        selectedAccentColor = colorResponse.value || '#f8a5c2';
+
+        // Load background theme
+        const bgResponse = await apiRequest('/api/settings/background_theme');
+        if (bgResponse.value) {
+            try {
+                selectedBackgroundTheme = JSON.parse(bgResponse.value);
+            } catch (e) {
+                selectedBackgroundTheme = { primary: '#111827', secondary: '#1f2937', card: '#374151' };
+            }
+        }
+
+        // Apply the loaded colors
+        applyAccentColor(selectedAccentColor);
+        applyBackgroundTheme(selectedBackgroundTheme);
+
+        // Update color picker selections
+        updateColorPickerSelection(selectedAccentColor);
+        updateBackgroundPickerSelection(selectedBackgroundTheme);
+    } catch (error) {
+        console.error('Failed to load settings:', error);
+        document.getElementById('searchEngineUrl').value = 'https://www.google.com/search?q=';
+        selectedAccentColor = '#f8a5c2';
+        selectedBackgroundTheme = { primary: '#111827', secondary: '#1f2937', card: '#374151' };
+        applyAccentColor(selectedAccentColor);
+        applyBackgroundTheme(selectedBackgroundTheme);
+    }
+}
+
+function initializeColorPicker() {
+    const colorOptions = document.querySelectorAll('.color-option');
+    const backgroundOptions = document.querySelectorAll('.background-option');
+
+    colorOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            colorOptions.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selected class to clicked option
+            this.classList.add('selected');
+
+            // Store selected color
+            selectedAccentColor = this.dataset.color;
+
+            // Apply color immediately for preview
+            applyAccentColor(selectedAccentColor);
+        });
+    });
+
+    backgroundOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            backgroundOptions.forEach(opt => opt.classList.remove('selected'));
+
+            // Add selected class to clicked option
+            this.classList.add('selected');
+
+            // Store selected background theme
+            selectedBackgroundTheme = {
+                primary: this.dataset.bg,
+                secondary: this.dataset.secondary,
+                card: this.dataset.card
+            };
+
+            // Apply background immediately for preview
+            applyBackgroundTheme(selectedBackgroundTheme);
+        });
+    });
+}
+
+function updateColorPickerSelection(color) {
+    const colorOptions = document.querySelectorAll('.color-option');
+    colorOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.color === color) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+function updateBackgroundPickerSelection(theme) {
+    const backgroundOptions = document.querySelectorAll('.background-option');
+    backgroundOptions.forEach(option => {
+        option.classList.remove('selected');
+        if (option.dataset.bg === theme.primary) {
+            option.classList.add('selected');
+        }
+    });
+}
+
+function applyAccentColor(color) {
+    const root = document.documentElement;
+
+    // Calculate secondary color (lighter version)
+    const secondaryColor = adjustColorBrightness(color, 20);
+
+    // Apply the colors
+    root.style.setProperty('--accent-primary', color);
+    root.style.setProperty('--accent-secondary', secondaryColor);
+}
+
+function applyBackgroundTheme(theme) {
+    const root = document.documentElement;
+
+    // Apply the background colors
+    root.style.setProperty('--bg-primary', theme.primary);
+    root.style.setProperty('--bg-secondary', theme.secondary);
+    root.style.setProperty('--bg-card', theme.card);
+
+    // Calculate hover color (slightly lighter)
+    const hoverColor = adjustColorBrightness(theme.card, 15);
+    root.style.setProperty('--bg-card-hover', hoverColor);
+
+    // Calculate border color (slightly lighter than card)
+    const borderColor = adjustColorBrightness(theme.card, 10);
+    root.style.setProperty('--border-color', borderColor);
+}
+
+function adjustColorBrightness(color, amount) {
+    // Convert hex to RGB
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+
+    // Adjust brightness
+    const newR = Math.min(255, Math.max(0, r + amount));
+    const newG = Math.min(255, Math.max(0, g + amount));
+    const newB = Math.min(255, Math.max(0, b + amount));
+
+    // Convert back to hex
+    return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+}
+
+async function saveSettings() {
+    const searchEngineUrl = document.getElementById('searchEngineUrl').value.trim();
+
+    if (!searchEngineUrl) {
+        alert('Please enter a search engine URL.');
+        return;
+    }
+
+    try {
+        // Save search engine URL
+        await apiRequest('/api/settings/search_engine_url', {
+            method: 'PUT',
+            body: JSON.stringify({ value: searchEngineUrl })
+        });
+
+        // Save accent color
+        await apiRequest('/api/settings/accent_color', {
+            method: 'PUT',
+            body: JSON.stringify({ value: selectedAccentColor })
+        });
+
+        // Save background theme
+        await apiRequest('/api/settings/background_theme', {
+            method: 'PUT',
+            body: JSON.stringify({ value: JSON.stringify(selectedBackgroundTheme) })
+        });
+
+        alert('Settings saved successfully!');
+        closeSettingsModal();
+    } catch (error) {
+        console.error('Failed to save settings:', error);
+    }
+}
+
 
 
 
@@ -314,11 +504,44 @@ function handleToolbarIconError(img, domain, name, step = 1) {
     }
 }
 
+// Load and apply colors on page load
+async function loadAndApplyTheme() {
+    try {
+        // Load accent color
+        const colorResponse = await apiRequest('/api/settings/accent_color');
+        const savedColor = colorResponse.value || '#f8a5c2';
+        applyAccentColor(savedColor);
+        selectedAccentColor = savedColor;
+
+        // Load background theme
+        const bgResponse = await apiRequest('/api/settings/background_theme');
+        if (bgResponse.value) {
+            try {
+                const savedTheme = JSON.parse(bgResponse.value);
+                applyBackgroundTheme(savedTheme);
+                selectedBackgroundTheme = savedTheme;
+            } catch (e) {
+                console.log('Invalid background theme JSON, using default');
+                applyBackgroundTheme({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+            }
+        } else {
+            applyBackgroundTheme({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+        }
+    } catch (error) {
+        console.log('No saved theme found, using defaults');
+        applyAccentColor('#f8a5c2');
+        applyBackgroundTheme({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+    }
+}
+
 // Initialize and load saved links when page loads
 document.addEventListener('DOMContentLoaded', async function() {
     // Initialize toolbar functionality
     initializeToolbar();
-    
+
+    // Load and apply saved theme (accent color and background)
+    await loadAndApplyTheme();
+
     // Load links from API
     await loadLinksFromAPI();
 });

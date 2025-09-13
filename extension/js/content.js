@@ -65,6 +65,11 @@
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
                             </svg>
                         </button>
+                        <button id="tvbox-toolbar-reload-btn" title="Reload Page & Extension">
+                            <svg viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                     <div id="tvbox-toolbar-divider"></div>
                     <div id="tvbox-toolbar-links">
@@ -301,7 +306,28 @@
             }, 300);
         }, 3000);
     }
-    
+
+    // Reload both the current page and the extension
+    async function reloadPageAndExtension() {
+        try {
+            // Clear the extension cache first
+            linksCache = null;
+            lastFetchTime = 0;
+
+            // Send message to background script to reload the extension
+            await chrome.runtime.sendMessage({
+                type: 'reloadExtension'
+            });
+
+            // Reload the current page
+            window.location.reload();
+        } catch (error) {
+            console.error('Egg TV: Error during reload:', error);
+            // Fallback to just reloading the page if extension reload fails
+            window.location.reload();
+        }
+    }
+
     // Initialize toolbar event handlers
     function initializeToolbarEvents() {
         const toolbar = document.getElementById('tvbox-toolbar');
@@ -310,6 +336,7 @@
         const findBtn = document.getElementById('tvbox-toolbar-find-btn');
         const backBtn = document.getElementById('tvbox-toolbar-back-btn');
         const forwardBtn = document.getElementById('tvbox-toolbar-forward-btn');
+        const reloadBtn = document.getElementById('tvbox-toolbar-reload-btn');
         const addBtn = document.getElementById('tvbox-toolbar-add-btn');
         
         if (triggerZone) {
@@ -353,20 +380,31 @@
             findBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 try {
+                    // Get custom search URL from server
+                    const searchUrlResponse = await chrome.runtime.sendMessage({
+                        type: 'getSearchUrl',
+                        serverUrl: config.serverUrl
+                    });
+
+                    let searchUrl = 'https://www.google.com';
+                    if (searchUrlResponse.success && searchUrlResponse.search_url) {
+                        searchUrl = searchUrlResponse.search_url;
+                    }
+
                     const response = await chrome.runtime.sendMessage({
                         type: 'openUrl',
-                        url: 'https://www.google.com'
+                        url: searchUrl
                     });
-                    
+
                     if (response.success) {
                         hideToolbar();
                     } else {
-                        console.error('Egg TV: Failed to open Google:', response.error);
+                        console.error('Egg TV: Failed to open search URL:', response.error);
                         // Fallback to normal navigation
-                        window.location.href = 'https://www.google.com';
+                        window.location.href = searchUrl;
                     }
                 } catch (error) {
-                    console.error('Egg TV: Error opening Google:', error);
+                    console.error('Egg TV: Error opening search URL:', error);
                     // Fallback to normal navigation
                     window.location.href = 'https://www.google.com';
                 }
@@ -389,7 +427,17 @@
                 hideToolbar();
             });
         }
-        
+
+        if (reloadBtn) {
+            reloadBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                // Hide toolbar first
+                hideToolbar();
+                // Reload the page and extension
+                await reloadPageAndExtension();
+            });
+        }
+
         if (addBtn) {
             addBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -416,26 +464,123 @@
             }
         }
     }
+
+    // Load and apply theme (accent color and background)
+    async function loadAndApplyTheme() {
+        try {
+            // Load accent color
+            const accentResponse = await chrome.runtime.sendMessage({
+                type: 'getAccentColor',
+                serverUrl: config.serverUrl
+            });
+
+            if (accentResponse.success && accentResponse.accent_color) {
+                applyAccentColorToToolbar(accentResponse.accent_color);
+            } else {
+                console.log('Egg TV: Using default accent color');
+                applyAccentColorToToolbar('#f8a5c2');
+            }
+
+            // Load background theme
+            const bgResponse = await chrome.runtime.sendMessage({
+                type: 'getBackgroundTheme',
+                serverUrl: config.serverUrl
+            });
+
+            if (bgResponse.success && bgResponse.background_theme) {
+                try {
+                    const theme = JSON.parse(bgResponse.background_theme);
+                    applyBackgroundThemeToToolbar(theme);
+                } catch (e) {
+                    console.log('Egg TV: Invalid background theme JSON, using default');
+                    applyBackgroundThemeToToolbar({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+                }
+            } else {
+                console.log('Egg TV: Using default background theme');
+                applyBackgroundThemeToToolbar({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+            }
+        } catch (error) {
+            console.log('Egg TV: Failed to load theme, using defaults');
+            applyAccentColorToToolbar('#f8a5c2');
+            applyBackgroundThemeToToolbar({ primary: '#111827', secondary: '#1f2937', card: '#374151' });
+        }
+    }
+
+    // Apply accent color to toolbar CSS variables
+    function applyAccentColorToToolbar(color) {
+        const toolbar = document.getElementById('tvbox-toolbar');
+        if (toolbar) {
+            // Calculate secondary color (lighter version)
+            const secondaryColor = adjustColorBrightness(color, 20);
+
+            // Apply the colors to the toolbar CSS variables
+            toolbar.style.setProperty('--tvbox-accent-primary', color);
+            toolbar.style.setProperty('--tvbox-accent-secondary', secondaryColor);
+
+            // Update the glow shadow with new color
+            const shadowGlow = `0 0 20px ${color}40`; // 40 = 25% opacity in hex
+            toolbar.style.setProperty('--tvbox-shadow-glow', shadowGlow);
+        }
+    }
+
+    // Apply background theme to toolbar CSS variables
+    function applyBackgroundThemeToToolbar(theme) {
+        const toolbar = document.getElementById('tvbox-toolbar');
+        if (toolbar) {
+            // Apply the background colors to the toolbar CSS variables
+            toolbar.style.setProperty('--tvbox-bg-primary', theme.primary);
+            toolbar.style.setProperty('--tvbox-bg-secondary', theme.secondary);
+            toolbar.style.setProperty('--tvbox-bg-card', theme.card);
+
+            // Calculate hover color (slightly lighter)
+            const hoverColor = adjustColorBrightness(theme.card, 15);
+            toolbar.style.setProperty('--tvbox-bg-card-hover', hoverColor);
+
+            // Calculate border color (slightly lighter than card)
+            const borderColor = adjustColorBrightness(theme.card, 10);
+            toolbar.style.setProperty('--tvbox-border-color', borderColor);
+        }
+    }
+
+    // Helper function to adjust color brightness
+    function adjustColorBrightness(color, amount) {
+        // Convert hex to RGB
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+
+        // Adjust brightness
+        const newR = Math.min(255, Math.max(0, r + amount));
+        const newG = Math.min(255, Math.max(0, g + amount));
+        const newB = Math.min(255, Math.max(0, b + amount));
+
+        // Convert back to hex
+        return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+    }
     
     // Initialize the toolbar
     async function initializeToolbar() {
         await loadConfig();
-        
+
         if (!config.enabled) {
             return;
         }
-        
+
         // Make handleIconError globally accessible immediately
         window.handleIconError = handleIconError;
-        
+
         // Create and inject toolbar HTML
         const toolbarContainer = document.createElement('div');
         toolbarContainer.innerHTML = createToolbarHTML();
         document.body.appendChild(toolbarContainer);
-        
+
         // Initialize events
         initializeToolbarEvents();
-        
+
+        // Load and apply theme (accent color and background)
+        await loadAndApplyTheme();
+
         // Load links
         await loadLinks();
     }
