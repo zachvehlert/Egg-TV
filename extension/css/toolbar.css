@@ -158,10 +158,6 @@
     border-radius: 4px !important;
 }
 
-.tvbox-toolbar-link-icon i {
-    font-size: 1.25rem !important;
-    color: var(--tvbox-accent-primary) !important;
-}
 
 .tvbox-toolbar-link-title {
     font-weight: 500 !important;
@@ -262,4 +258,3 @@
     color: var(--tvbox-text-primary) !important;
 }
 
-/* Bootstrap Icons are handled via fallback SVGs in JavaScript */
