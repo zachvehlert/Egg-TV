@@ -9,19 +9,19 @@ Egg TV is a streaming-focused web application that provides a customizable dashb
 ## Features
 
 - **Link Management**: Add, delete, and edit webpage links with custom icons and colors
-- **Browser Extension**: Chrome/Firefox extension for quick access to your Egg TV links
+- **Browser Extension**: Chromium-based browser extension for quick access to your Egg TV links
 - **Custom Icons**: Support for Bootstrap icons with custom colors, plus automatic favicon retrieval
 - **API Endpoints**: REST API for programmatic access and browser extension integration
 - **CORS Support**: Cross-origin support for browser extensions and external applications
 - **SQLite Database**: Persistent storage for all your links and settings
-- **Responsive Design**: Works on TV screens, desktop browsers, and mobile devices
+- **Responsive Design**: Works on TV screens and desktop browsers
 
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.13+
-- UV package manager (recommended) or pip
+- UV package manager
 
 ### Installation
 
@@ -33,20 +33,12 @@ Egg TV is a streaming-focused web application that provides a customizable dashb
 
 2. **Install dependencies:**
    ```bash
-   # Using UV (recommended)
    uv install
-   
-   # Or using pip
-   pip install -r requirements.txt
    ```
 
 3. **Run the application:**
    ```bash
-   # Using UV
    uv run main.py
-   
-   # Or using python directly
-   python main.py
    ```
 
 4. **Access the application:**
@@ -65,11 +57,7 @@ The Egg TV browser extension allows you to access your links directly from your 
    - Select the `extension/` directory from your Egg TV installation
    - The Egg TV extension should now appear in your toolbar
 
-2. **Firefox:**
-   - Open Firefox and navigate to `about:debugging`
-   - Click "This Firefox"
-   - Click "Load Temporary Add-on"
-   - Select the `manifest.json` file from the `extension/` directory
+**Note:** Firefox extension support is not currently available. Firefox support may be added in the future if there is user demand.
 
 #### Configuration
 
@@ -118,15 +106,15 @@ tv-box/
 
 - **Primary**: Raspberry Pi 5 with Fullpage OS
 - **Secondary**: Any system running Python 3.13+ (development/testing)
-- **Browser Extension**: Chrome, Firefox, and other Chromium-based browsers
+- **Browser Extension**: Chrome and other Chromium-based browsers (Firefox not supported)
 
 ## Usage
 
 ### TV Interface
 The application is intended to be used as a full-screen interface on a TV, providing easy access to various streaming platforms and web services through a clean, user-friendly interface.
 
-### Desktop/Mobile
-Access your links through the web interface on any device with a modern web browser.
+### Desktop
+Access your links through the web interface on desktop devices with a modern web browser.
 
 ### Browser Extension
 Quick access to your Egg TV links from any website through the browser extension popup.
