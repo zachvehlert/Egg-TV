@@ -42,7 +42,7 @@
 }
 
 #tvbox-toolbar-content {
-    padding: 2rem 1rem !important;
+    padding: 32px 16px !important;
     height: 100% !important;
     overflow-y: auto !important;
 }
@@ -52,18 +52,18 @@
     background: var(--tvbox-gradient-primary) !important;
     border: none !important;
     color: white !important;
-    padding: 1rem !important;
+    padding: 16px !important;
     border-radius: 12px !important;
     font-weight: 600 !important;
-    font-size: 1rem !important;
+    font-size: 16px !important;
     cursor: pointer !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.5rem !important;
+    gap: 8px !important;
     box-shadow: var(--tvbox-shadow-md) !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 8px !important;
     font-family: inherit !important;
 }
 
@@ -74,8 +74,8 @@
 
 #tvbox-toolbar-nav-buttons {
     display: flex !important;
-    gap: 0.5rem !important;
-    margin-bottom: 1rem !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
 }
 
 #tvbox-toolbar-back-btn,
@@ -84,7 +84,7 @@
     background: var(--tvbox-bg-card) !important;
     border: 1px solid var(--tvbox-border-color) !important;
     color: var(--tvbox-text-primary) !important;
-    padding: 0.75rem !important;
+    padding: 12px !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -103,28 +103,28 @@
 
 #tvbox-toolbar-back-btn svg,
 #tvbox-toolbar-forward-btn svg {
-    width: 1rem !important;
-    height: 1rem !important;
+    width: 16px !important;
+    height: 16px !important;
     fill: currentColor !important;
 }
 
 #tvbox-toolbar-divider {
     height: 1px !important;
     background: var(--tvbox-border-color) !important;
-    margin: 1rem 0 !important;
+    margin: 16px 0 !important;
 }
 
 #tvbox-toolbar-links {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.5rem !important;
+    gap: 8px !important;
 }
 
 .tvbox-toolbar-link {
     display: flex !important;
     align-items: center !important;
-    gap: 0.75rem !important;
-    padding: 0.875rem !important;
+    gap: 12px !important;
+    padding: 14px !important;
     background: var(--tvbox-bg-card) !important;
     border: 1px solid transparent !important;
     border-radius: 8px !important;
@@ -161,7 +161,7 @@
 
 .tvbox-toolbar-link-title {
     font-weight: 500 !important;
-    font-size: 0.875rem !important;
+    font-size: 14px !important;
     color: var(--tvbox-text-primary) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
@@ -181,24 +181,24 @@
 
 #tvbox-loading-indicator {
     text-align: center !important;
-    padding: 2rem !important;
+    padding: 32px !important;
     color: var(--tvbox-text-muted) !important;
-    font-size: 0.875rem !important;
+    font-size: 14px !important;
 }
 
 #tvbox-error-message {
     text-align: center !important;
-    padding: 2rem !important;
+    padding: 32px !important;
     color: #ef4444 !important;
-    font-size: 0.875rem !important;
+    font-size: 14px !important;
     background: rgba(239, 68, 68, 0.1) !important;
     border-radius: 8px !important;
-    margin: 1rem 0 !important;
+    margin: 16px 0 !important;
 }
 
 .tvbox-icon-home {
-    width: 1rem !important;
-    height: 1rem !important;
+    width: 16px !important;
+    height: 16px !important;
     fill: currentColor !important;
 }
 
@@ -214,8 +214,46 @@
     }
     
     #tvbox-toolbar-content {
-        padding: 1.5rem 0.75rem !important;
+        padding: 24px 12px !important;
     }
+}
+
+/* Find Website Button */
+.tvbox-find-website-btn {
+    width: 100% !important;
+    background: var(--tvbox-bg-card) !important;
+    border: 1px solid var(--tvbox-border-color) !important;
+    color: var(--tvbox-text-primary) !important;
+    padding: 14px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin-bottom: 8px !important;
+    font-family: inherit !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.tvbox-find-website-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    fill: currentColor !important;
+}
+
+.tvbox-find-website-btn:hover {
+    background: var(--tvbox-bg-card-hover) !important;
+    border-color: var(--tvbox-accent-primary) !important;
+    transform: translateY(-1px) !important;
+    color: var(--tvbox-accent-primary) !important;
+}
+
+.tvbox-find-website-btn:active {
+    transform: translateY(0) !important;
 }
 
 /* Add Website Button */
@@ -224,13 +262,13 @@
     background: var(--tvbox-bg-card) !important;
     border: 1px solid var(--tvbox-border-color) !important;
     color: var(--tvbox-text-primary) !important;
-    padding: 0.875rem !important;
+    padding: 14px !important;
     border-radius: 8px !important;
     font-weight: 500 !important;
-    font-size: 0.875rem !important;
+    font-size: 14px !important;
     cursor: pointer !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    margin-top: 1rem !important;
+    margin-bottom: 8px !important;
     font-family: inherit !important;
     text-align: center !important;
 }

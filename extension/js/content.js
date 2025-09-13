@@ -47,6 +47,13 @@
                         </svg>
                         TV Box
                     </button>
+                    <button id="tvbox-toolbar-find-btn" class="tvbox-find-website-btn" title="Find a Website">
+                        <svg viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                        </svg>
+                        Find a Website
+                    </button>
+                    <button id="tvbox-toolbar-add-btn" class="tvbox-add-website-btn">Add This Website</button>
                     <div id="tvbox-toolbar-nav-buttons">
                         <button id="tvbox-toolbar-back-btn" title="Go Back">
                             <svg viewBox="0 0 20 20">
@@ -63,7 +70,6 @@
                     <div id="tvbox-toolbar-links">
                         <div id="tvbox-loading-indicator">Loading links...</div>
                     </div>
-                    <button id="tvbox-toolbar-add-btn" class="tvbox-add-website-btn">Add This Website</button>
                 </div>
             </div>
             <div id="tvbox-mouse-trigger-zone"></div>
@@ -137,7 +143,7 @@
         const linksHTML = links.map(link => {
             const iconHTML = createIconHTML(link);
             return `
-                <a href="${link.url}" class="tvbox-toolbar-link" title="${link.name}">
+                <a href="#" class="tvbox-toolbar-link" title="${link.name}" data-url="${link.url}">
                     <div class="tvbox-toolbar-link-icon">
                         ${iconHTML}
                     </div>
@@ -147,6 +153,35 @@
         }).join('');
         
         linksContainer.innerHTML = linksHTML;
+        
+        // Add click handlers for toolbar links to use single tab management
+        const toolbarLinks = linksContainer.querySelectorAll('.tvbox-toolbar-link');
+        toolbarLinks.forEach(link => {
+            link.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const url = link.getAttribute('data-url');
+                if (url) {
+                    try {
+                        const response = await chrome.runtime.sendMessage({
+                            type: 'openUrl',
+                            url: url
+                        });
+                        
+                        if (response.success) {
+                            hideToolbar();
+                        } else {
+                            console.error('TV Box: Failed to open URL:', response.error);
+                            // Fallback to normal navigation
+                            window.location.href = url;
+                        }
+                    } catch (error) {
+                        console.error('TV Box: Error opening URL:', error);
+                        // Fallback to normal navigation
+                        window.location.href = url;
+                    }
+                }
+            });
+        });
     }
     
     // Show toolbar with animation
@@ -272,6 +307,7 @@
         const toolbar = document.getElementById('tvbox-toolbar');
         const triggerZone = document.getElementById('tvbox-mouse-trigger-zone');
         const homeBtn = document.getElementById('tvbox-toolbar-home-btn');
+        const findBtn = document.getElementById('tvbox-toolbar-find-btn');
         const backBtn = document.getElementById('tvbox-toolbar-back-btn');
         const forwardBtn = document.getElementById('tvbox-toolbar-forward-btn');
         const addBtn = document.getElementById('tvbox-toolbar-add-btn');
@@ -289,9 +325,51 @@
         }
         
         if (homeBtn) {
-            homeBtn.addEventListener('click', (e) => {
+            homeBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                window.location.href = config.serverUrl;
+                try {
+                    const response = await chrome.runtime.sendMessage({
+                        type: 'openUrl',
+                        url: config.serverUrl
+                    });
+                    
+                    if (response.success) {
+                        hideToolbar();
+                    } else {
+                        console.error('TV Box: Failed to open home URL:', response.error);
+                        // Fallback to normal navigation
+                        window.location.href = config.serverUrl;
+                    }
+                } catch (error) {
+                    console.error('TV Box: Error opening home URL:', error);
+                    // Fallback to normal navigation
+                    window.location.href = config.serverUrl;
+                }
+                hideToolbar();
+            });
+        }
+        
+        if (findBtn) {
+            findBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await chrome.runtime.sendMessage({
+                        type: 'openUrl',
+                        url: 'https://www.google.com'
+                    });
+                    
+                    if (response.success) {
+                        hideToolbar();
+                    } else {
+                        console.error('TV Box: Failed to open Google:', response.error);
+                        // Fallback to normal navigation
+                        window.location.href = 'https://www.google.com';
+                    }
+                } catch (error) {
+                    console.error('TV Box: Error opening Google:', error);
+                    // Fallback to normal navigation
+                    window.location.href = 'https://www.google.com';
+                }
                 hideToolbar();
             });
         }

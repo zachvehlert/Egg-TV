@@ -54,6 +54,13 @@ chrome.action.onClicked.addListener(async (tab) => {
 
 // Handle messages from content scripts
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'openUrl') {
+        handleUrlOpen(message.url).then(result => {
+            sendResponse(result);
+        });
+        return true;
+    }
+    
     switch (message.type) {
         case 'getConfig':
             chrome.storage.local.get(['tvboxConfig']).then(result => {
@@ -223,3 +230,72 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 // Initialize badge on startup
 updateBadge();
+
+// Tab limiting functionality - enforce single tab globally
+let currentTabId = null;
+
+// Initialize with the currently active tab
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs.length > 0) {
+        currentTabId = tabs[0].id;
+        console.log('TV Box: Initialized with active tab', currentTabId);
+    }
+});
+
+// Handle new tab creation - close old tab when any new tab is created
+chrome.tabs.onCreated.addListener(async (tab) => {
+    // If there's an existing tab and a new tab is created, close the old one
+    if (currentTabId && currentTabId !== tab.id) {
+        try {
+            await chrome.tabs.remove(currentTabId);
+            console.log('TV Box: Closed previous tab', currentTabId, 'for new tab', tab.id);
+        } catch (error) {
+            // Tab might already be closed, ignore error
+            console.log('TV Box: Previous tab already closed');
+        }
+    }
+    // Set the new tab as the current tab
+    currentTabId = tab.id;
+    console.log('TV Box: Now tracking tab', tab.id);
+});
+
+// Handle tab updates (URL changes)
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // If this is a URL change (navigation), keep tracking the tab
+    if (changeInfo.url && tabId === currentTabId) {
+        console.log('TV Box: Tab navigated to', changeInfo.url);
+    }
+});
+
+// Handle tab removal - clear our reference
+chrome.tabs.onRemoved.addListener((tabId) => {
+    if (tabId === currentTabId) {
+        currentTabId = null;
+        console.log('TV Box: Stopped tracking removed tab', tabId);
+    }
+});
+
+// Handle URL opening with single tab enforcement
+async function handleUrlOpen(url) {
+    try {
+        if (currentTabId) {
+            // Update existing tab instead of creating new one
+            await chrome.tabs.update(currentTabId, { url: url, active: true });
+            return { success: true, action: 'updated_existing' };
+        } else {
+            // Create new tab if none exists
+            const newTab = await chrome.tabs.create({ url: url, active: true });
+            currentTabId = newTab.id;
+            return { success: true, action: 'created_new' };
+        }
+    } catch (error) {
+        // If tab doesn't exist anymore, create a new one
+        try {
+            const newTab = await chrome.tabs.create({ url: url, active: true });
+            currentTabId = newTab.id;
+            return { success: true, action: 'created_new_after_error' };
+        } catch (createError) {
+            return { success: false, error: createError.message };
+        }
+    }
+}

@@ -5,7 +5,8 @@
   "description": "Access your TV Box links from any website with a convenient sliding toolbar",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "http://localhost:*/*",
