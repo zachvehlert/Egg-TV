@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database initialization script for TV Box
+Database initialization script for Keke TV
 Creates tables and adds sample data
 """
 

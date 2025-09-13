@@ -1,18 +1,18 @@
-/* TV Box Extension Toolbar Styles */
+/* Keke TV Extension Toolbar Styles */
 #tvbox-toolbar {
-    --tvbox-bg-primary: #0a0b0f;
-    --tvbox-bg-secondary: #16171d;
-    --tvbox-bg-card: #1a1c25;
-    --tvbox-bg-card-hover: #21242e;
-    --tvbox-accent-primary: #6366f1;
-    --tvbox-accent-secondary: #8b5cf6;
-    --tvbox-text-primary: #f8fafc;
-    --tvbox-text-secondary: #cbd5e1;
-    --tvbox-text-muted: #64748b;
-    --tvbox-border-color: #334155;
+    --tvbox-bg-primary: #111827;
+    --tvbox-bg-secondary: #1f2937;
+    --tvbox-bg-card: #374151;
+    --tvbox-bg-card-hover: #4b5563;
+    --tvbox-accent-primary: #f8a5c2;
+    --tvbox-accent-secondary: #fdc2df;
+    --tvbox-text-primary: #f9fafb;
+    --tvbox-text-secondary: #d1d5db;
+    --tvbox-text-muted: #9ca3af;
+    --tvbox-border-color: #4b5563;
     --tvbox-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     --tvbox-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --tvbox-shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --tvbox-shadow-glow: 0 0 20px rgba(248, 165, 194, 0.4);
     --tvbox-gradient-primary: linear-gradient(135deg, var(--tvbox-accent-primary) 0%, var(--tvbox-accent-secondary) 100%);
 
     position: fixed !important;
@@ -189,9 +189,9 @@
 #tvbox-error-message {
     text-align: center !important;
     padding: 32px !important;
-    color: #ef4444 !important;
+    color: #fb7185 !important;
     font-size: 14px !important;
-    background: rgba(239, 68, 68, 0.1) !important;
+    background: rgba(251, 113, 133, 0.1) !important;
     border-radius: 8px !important;
     margin: 16px 0 !important;
 }

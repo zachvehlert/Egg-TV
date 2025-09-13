@@ -27,13 +27,6 @@ async function apiRequest(url, options = {}) {
 
 
 // Modal functionality
-function openAddModal() {
-    document.getElementById('addLinkModal').classList.add('show');
-}
-
-function closeAddModal() {
-    document.getElementById('addLinkModal').classList.remove('show');
-}
 
 function openEditModal() {
     document.getElementById('editLinkModal').classList.add('show');
@@ -103,37 +96,6 @@ function createIconImg(url, name) {
     }
 }
 
-async function addNewLink() {
-    const name = document.getElementById('linkName').value.trim();
-    const url = document.getElementById('linkUrl').value.trim();
-
-    if (!name || !url) {
-        alert('Please fill in all required fields.');
-        return;
-    }
-    
-    try {
-        // Create link via API
-        const linkData = {
-            name: name,
-            url: url
-        };
-        
-        await apiRequest('/api/links', {
-            method: 'POST',
-            body: JSON.stringify(linkData)
-        });
-
-        // Clear form and close modal
-        document.getElementById('addLinkForm').reset();
-        closeAddModal();
-
-        // Reload links from API to show the new link
-        await loadLinksFromAPI();
-    } catch (error) {
-        console.error('Failed to add link:', error);
-    }
-}
 
 // saveLinksToStorage is no longer needed - API handles persistence automatically
 

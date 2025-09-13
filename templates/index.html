@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Box</title>
+    <title>Keke TV</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
@@ -28,17 +28,8 @@
     <div class="mouse-trigger-zone" id="mouseTriggerZone"></div>
     
     <div class="container">
-        <h1>TV Box</h1>
+        <h1>Keke TV</h1>
         
-        <!-- Add Link Button -->
-        <div class="add-button-container">
-            <button class="btn-primary" onclick="openAddModal()">
-                <svg class="icon" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-                </svg>
-                Add New Link
-            </button>
-        </div>
 
         <!-- Links Grid -->
         <div class="links-grid" id="linksGrid">
@@ -71,39 +62,6 @@
         </div>
     </div>
 
-    <!-- Add Link Modal -->
-    <div class="modal-overlay" id="addLinkModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Link</h5>
-                <button type="button" class="modal-close" onclick="closeAddModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <form id="addLinkForm">
-                    <div class="form-group">
-                        <label for="linkName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="linkName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="linkUrl" class="form-label">URL</label>
-                        <div class="input-group">
-                            <input type="url" class="form-control" id="linkUrl" required>
-                            <a href="https://www.google.com" class="btn-secondary">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-                                </svg>
-                                Search
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-secondary" onclick="closeAddModal()">Cancel</button>
-                <button type="button" class="btn-primary" onclick="addNewLink()">Add Link</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Edit Link Modal -->
     <div class="modal-overlay" id="editLinkModal">

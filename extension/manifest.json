@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "TV Box Toolbar",
+  "name": "Keke TV Toolbar",
   "version": "1.0.0",
-  "description": "Access your TV Box links from any website with a convenient sliding toolbar",
+  "description": "Access your Keke TV links from any website with a convenient sliding toolbar",
   "permissions": [
     "activeTab",
     "storage",
@@ -27,7 +27,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "TV Box Toolbar",
+    "default_title": "Keke TV Toolbar",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",

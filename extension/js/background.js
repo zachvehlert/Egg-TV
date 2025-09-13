@@ -1,4 +1,4 @@
-// TV Box Extension Background Script
+// Keke TV Extension Background Script
 // Handles extension lifecycle and storage management
 
 // Default configuration
@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
         chrome.notifications.create({
             type: 'basic',
             iconUrl: 'icons/icon-48.png',
-            title: 'TV Box Toolbar Installed',
+            title: 'Keke TV Toolbar Installed',
             message: 'Hover near the left edge of any webpage to access your links!'
         });
     }
@@ -40,7 +40,7 @@ chrome.action.onClicked.addListener(async (tab) => {
         chrome.notifications.create({
             type: 'basic',
             iconUrl: 'icons/icon-48.png',
-            title: 'TV Box Toolbar',
+            title: 'Keke TV Toolbar',
             message: config.enabled ? 'Toolbar enabled' : 'Toolbar disabled'
         });
         
@@ -48,7 +48,7 @@ chrome.action.onClicked.addListener(async (tab) => {
         chrome.tabs.reload(tab.id);
         
     } catch (error) {
-        console.error('TV Box: Failed to toggle toolbar:', error);
+        console.error('Keke TV: Failed to toggle toolbar:', error);
     }
 });
 
@@ -217,7 +217,7 @@ async function updateBadge() {
             chrome.action.setBadgeBackgroundColor({ color: '#64748b' });
         }
     } catch (error) {
-        console.error('TV Box: Failed to update badge:', error);
+        console.error('Keke TV: Failed to update badge:', error);
     }
 }
 
@@ -238,7 +238,7 @@ let currentTabId = null;
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs.length > 0) {
         currentTabId = tabs[0].id;
-        console.log('TV Box: Initialized with active tab', currentTabId);
+        console.log('Keke TV: Initialized with active tab', currentTabId);
     }
 });
 
@@ -248,22 +248,22 @@ chrome.tabs.onCreated.addListener(async (tab) => {
     if (currentTabId && currentTabId !== tab.id) {
         try {
             await chrome.tabs.remove(currentTabId);
-            console.log('TV Box: Closed previous tab', currentTabId, 'for new tab', tab.id);
+            console.log('Keke TV: Closed previous tab', currentTabId, 'for new tab', tab.id);
         } catch (error) {
             // Tab might already be closed, ignore error
-            console.log('TV Box: Previous tab already closed');
+            console.log('Keke TV: Previous tab already closed');
         }
     }
     // Set the new tab as the current tab
     currentTabId = tab.id;
-    console.log('TV Box: Now tracking tab', tab.id);
+    console.log('Keke TV: Now tracking tab', tab.id);
 });
 
 // Handle tab updates (URL changes)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // If this is a URL change (navigation), keep tracking the tab
     if (changeInfo.url && tabId === currentTabId) {
-        console.log('TV Box: Tab navigated to', changeInfo.url);
+        console.log('Keke TV: Tab navigated to', changeInfo.url);
     }
 });
 
@@ -271,7 +271,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
     if (tabId === currentTabId) {
         currentTabId = null;
-        console.log('TV Box: Stopped tracking removed tab', tabId);
+        console.log('Keke TV: Stopped tracking removed tab', tabId);
     }
 });
 

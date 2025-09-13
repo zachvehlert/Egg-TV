@@ -12,7 +12,7 @@ def create_icon(size, output_path):
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     
-    # Colors (TV Box brand colors)
+    # Colors (Keke TV brand colors)
     primary_color = (99, 102, 241)  # #6366f1
     secondary_color = (139, 92, 246)  # #8b5cf6
     

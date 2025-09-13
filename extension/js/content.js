@@ -1,4 +1,4 @@
-// TV Box Extension Content Script
+// Keke TV Extension Content Script
 // This script runs on every webpage and injects the toolbar
 
 (function() {
@@ -32,7 +32,7 @@
                 config = { ...DEFAULT_CONFIG, ...result.tvboxConfig };
             }
         } catch (error) {
-            console.warn('TV Box: Could not load config, using defaults');
+            console.warn('Keke TV: Could not load config, using defaults');
         }
     }
     
@@ -41,17 +41,17 @@
         return `
             <div id="tvbox-toolbar">
                 <div id="tvbox-toolbar-content">
-                    <button id="tvbox-toolbar-home-btn" title="Go to TV Box">
+                    <button id="tvbox-toolbar-home-btn" title="Go to Keke TV">
                         <svg class="tvbox-icon-home" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                         </svg>
-                        TV Box
+                        Keke TV
                     </button>
-                    <button id="tvbox-toolbar-find-btn" class="tvbox-find-website-btn" title="Find a Website">
+                    <button id="tvbox-toolbar-find-btn" class="tvbox-find-website-btn" title="Search The Web">
                         <svg viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                         </svg>
-                        Find a Website
+                        Search The Web
                     </button>
                     <button id="tvbox-toolbar-add-btn" class="tvbox-add-website-btn">Add This Website</button>
                     <div id="tvbox-toolbar-nav-buttons">
@@ -100,7 +100,7 @@
                 throw new Error(response.error || 'Unknown server error');
             }
         } catch (error) {
-            console.error('TV Box: Failed to fetch links:', error);
+            console.error('Keke TV: Failed to fetch links:', error);
             throw error;
         }
     }
@@ -170,12 +170,12 @@
                         if (response.success) {
                             hideToolbar();
                         } else {
-                            console.error('TV Box: Failed to open URL:', response.error);
+                            console.error('Keke TV: Failed to open URL:', response.error);
                             // Fallback to normal navigation
                             window.location.href = url;
                         }
                     } catch (error) {
-                        console.error('TV Box: Error opening URL:', error);
+                        console.error('Keke TV: Error opening URL:', error);
                         // Fallback to normal navigation
                         window.location.href = url;
                     }
@@ -248,7 +248,7 @@
                 showNotification(`Failed to add website: ${response.error}`, 'error');
             }
         } catch (error) {
-            console.error('TV Box: Failed to add website:', error);
+            console.error('Keke TV: Failed to add website:', error);
             showNotification(`Error: ${error.message}`, 'error');
         } finally {
             // Restore button state
@@ -336,12 +336,12 @@
                     if (response.success) {
                         hideToolbar();
                     } else {
-                        console.error('TV Box: Failed to open home URL:', response.error);
+                        console.error('Keke TV: Failed to open home URL:', response.error);
                         // Fallback to normal navigation
                         window.location.href = config.serverUrl;
                     }
                 } catch (error) {
-                    console.error('TV Box: Error opening home URL:', error);
+                    console.error('Keke TV: Error opening home URL:', error);
                     // Fallback to normal navigation
                     window.location.href = config.serverUrl;
                 }
@@ -361,12 +361,12 @@
                     if (response.success) {
                         hideToolbar();
                     } else {
-                        console.error('TV Box: Failed to open Google:', response.error);
+                        console.error('Keke TV: Failed to open Google:', response.error);
                         // Fallback to normal navigation
                         window.location.href = 'https://www.google.com';
                     }
                 } catch (error) {
-                    console.error('TV Box: Error opening Google:', error);
+                    console.error('Keke TV: Error opening Google:', error);
                     // Fallback to normal navigation
                     window.location.href = 'https://www.google.com';
                 }

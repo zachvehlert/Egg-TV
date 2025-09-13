@@ -1,12 +1,12 @@
-# TV Box Browser Extension
+# Keke TV Browser Extension
 
-This browser extension brings your TV Box toolbar to any website, allowing you to access your favorite links from anywhere on the web.
+This browser extension brings your Keke TV toolbar to any website, allowing you to access your favorite links from anywhere on the web.
 
 ## Features
 
-- 🎯 **Universal Access**: Your TV Box links available on any website
+- 🎯 **Universal Access**: Your Keke TV links available on any website
 - 🖱️ **Hover to Show**: Toolbar appears when you hover near the left edge of any webpage
-- 🎨 **Same Design**: Identical look and feel to your main TV Box application
+- 🎨 **Same Design**: Identical look and feel to your main Keke TV application
 - ⚡ **Fast & Cached**: Links are cached locally for quick access
 - 🔧 **Configurable**: Easy setup through extension popup
 
@@ -14,7 +14,7 @@ This browser extension brings your TV Box toolbar to any website, allowing you t
 
 ### Prerequisites
 
-1. Make sure your TV Box Flask application is running:
+1. Make sure your Keke TV Flask application is running:
    ```bash
    cd /path/to/tv-box
    uv run main.py
@@ -26,16 +26,16 @@ This browser extension brings your TV Box toolbar to any website, allowing you t
 1. Open Chrome and navigate to `chrome://extensions/`
 2. Enable "Developer mode" (toggle in top right corner)
 3. Click "Load unpacked"
-4. Select the `extension` folder from your TV Box project
-5. The TV Box Toolbar extension should now appear in your extensions list
+4. Select the `extension` folder from your Keke TV project
+5. The Keke TV Toolbar extension should now appear in your extensions list
 
 ## Setup
 
-1. Click the TV Box extension icon in your browser toolbar
+1. Click the Keke TV extension icon in your browser toolbar
 2. Configure your server URL (default: `http://localhost:5000`)
 3. Ensure the toggle is enabled
 4. Click "Save Settings"
-5. You should see "Connected to TV Box" status
+5. You should see "Connected to Keke TV" status
 
 ## Usage
 
@@ -43,9 +43,9 @@ This browser extension brings your TV Box toolbar to any website, allowing you t
 
 1. Visit any website
 2. Move your mouse to the far left edge of the browser window
-3. The TV Box toolbar will slide out from the left
+3. The Keke TV toolbar will slide out from the left
 4. Click any link to open it in a new tab
-5. Click the "TV Box" button to return to your main application
+5. Click the "Keke TV" button to return to your main application
 
 ### Managing Settings
 
@@ -59,13 +59,13 @@ This browser extension brings your TV Box toolbar to any website, allowing you t
 ### Toolbar Not Appearing
 
 1. Check that the extension is enabled in `chrome://extensions/`
-2. Verify your TV Box server is running at the configured URL
+2. Verify your Keke TV server is running at the configured URL
 3. Check the extension popup for connection status
 4. Try refreshing the webpage
 
 ### Connection Issues
 
-1. Ensure your TV Box Flask app is running
+1. Ensure your Keke TV Flask app is running
 2. Verify the server URL in extension settings
 3. Check that CORS is properly configured (should be automatic)
 4. Test the API endpoint: `http://localhost:5000/api/extension/health`
@@ -73,7 +73,7 @@ This browser extension brings your TV Box toolbar to any website, allowing you t
 ### Links Not Loading
 
 1. Check the extension popup for error messages
-2. Verify your TV Box database has links configured
+2. Verify your Keke TV database has links configured
 3. Try clearing the extension's cache by disabling/re-enabling it
 
 ## Development
@@ -123,4 +123,4 @@ Currently supports:
 
 ## License
 
-Same license as the main TV Box project.
+Same license as the main Keke TV project.
