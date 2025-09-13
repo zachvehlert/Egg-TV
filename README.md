@@ -1,15 +1,15 @@
-# Keke TV
+# Egg TV
 
 A highly configurable smart TV web application with browser extension support, designed to run on a Raspberry Pi 5 with fullpage OS.
 
 ## Overview
 
-Keke TV is a streaming-focused web application that provides a customizable dashboard of links to various streaming services and websites. Think of it as a simplified, web-based alternative to Apple TV or other streaming devices. It now includes a browser extension for easy access to your links from any web browser.
+Egg TV is a streaming-focused web application that provides a customizable dashboard of links to various streaming services and websites. Think of it as a simplified, web-based alternative to Apple TV or other streaming devices. It now includes a browser extension for easy access to your links from any web browser.
 
 ## Features
 
 - **Link Management**: Add, delete, and edit webpage links with custom icons and colors
-- **Browser Extension**: Chrome/Firefox extension for quick access to your Keke TV links
+- **Browser Extension**: Chrome/Firefox extension for quick access to your Egg TV links
 - **Custom Icons**: Support for Bootstrap icons with custom colors, plus automatic favicon retrieval
 - **API Endpoints**: REST API for programmatic access and browser extension integration
 - **CORS Support**: Cross-origin support for browser extensions and external applications
@@ -54,7 +54,7 @@ Keke TV is a streaming-focused web application that provides a customizable dash
 
 ### Browser Extension Setup
 
-The Keke TV browser extension allows you to access your links directly from your browser toolbar.
+The Egg TV browser extension allows you to access your links directly from your browser toolbar.
 
 #### Installation
 
@@ -62,8 +62,8 @@ The Keke TV browser extension allows you to access your links directly from your
    - Open Chrome and navigate to `chrome://extensions/`
    - Enable "Developer mode" (toggle in top right)
    - Click "Load unpacked"
-   - Select the `extension/` directory from your Keke TV installation
-   - The Keke TV extension should now appear in your toolbar
+   - Select the `extension/` directory from your Egg TV installation
+   - The Egg TV extension should now appear in your toolbar
 
 2. **Firefox:**
    - Open Firefox and navigate to `about:debugging`
@@ -73,14 +73,14 @@ The Keke TV browser extension allows you to access your links directly from your
 
 #### Configuration
 
-1. **Start your Keke TV server** (it must be running for the extension to work)
-2. **Click the Keke TV extension icon** in your browser toolbar
+1. **Start your Egg TV server** (it must be running for the extension to work)
+2. **Click the Egg TV extension icon** in your browser toolbar
 3. **Configure server URL** if different from `http://localhost:5000`
 4. **Access your links** directly from the extension popup
 
 ## API Endpoints
 
-Keke TV provides several API endpoints for integration:
+Egg TV provides several API endpoints for integration:
 
 - `GET /api/links` - Get all links
 - `POST /api/links` - Create a new link
@@ -129,4 +129,4 @@ The application is intended to be used as a full-screen interface on a TV, provi
 Access your links through the web interface on any device with a modern web browser.
 
 ### Browser Extension
-Quick access to your Keke TV links from any website through the browser extension popup.
+Quick access to your Egg TV links from any website through the browser extension popup.

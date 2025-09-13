@@ -1,4 +1,4 @@
-// Keke TV Extension Popup Script
+// Egg TV Extension Popup Script
 // Handles the extension popup interface
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
             
             if (result.success) {
-                showStatus(`Connected to Keke TV v${result.version}`, 'connected');
+                showStatus(`Connected to Egg TV v${result.version}`, 'connected');
             } else {
                 showStatus(`Connection failed: ${result.error}`, 'disconnected');
             }

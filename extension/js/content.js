@@ -1,4 +1,4 @@
-// Keke TV Extension Content Script
+// Egg TV Extension Content Script
 // This script runs on every webpage and injects the toolbar
 
 (function() {
@@ -32,7 +32,7 @@
                 config = { ...DEFAULT_CONFIG, ...result.tvboxConfig };
             }
         } catch (error) {
-            console.warn('Keke TV: Could not load config, using defaults');
+            console.warn('Egg TV: Could not load config, using defaults');
         }
     }
     
@@ -41,11 +41,11 @@
         return `
             <div id="tvbox-toolbar">
                 <div id="tvbox-toolbar-content">
-                    <button id="tvbox-toolbar-home-btn" title="Go to Keke TV">
+                    <button id="tvbox-toolbar-home-btn" title="Go to Egg TV">
                         <svg class="tvbox-icon-home" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
                         </svg>
-                        Keke TV
+                        Egg TV
                     </button>
                     <button id="tvbox-toolbar-find-btn" class="tvbox-find-website-btn" title="Search The Web">
                         <svg viewBox="0 0 20 20">
@@ -100,7 +100,7 @@
                 throw new Error(response.error || 'Unknown server error');
             }
         } catch (error) {
-            console.error('Keke TV: Failed to fetch links:', error);
+            console.error('Egg TV: Failed to fetch links:', error);
             throw error;
         }
     }
@@ -170,12 +170,12 @@
                         if (response.success) {
                             hideToolbar();
                         } else {
-                            console.error('Keke TV: Failed to open URL:', response.error);
+                            console.error('Egg TV: Failed to open URL:', response.error);
                             // Fallback to normal navigation
                             window.location.href = url;
                         }
                     } catch (error) {
-                        console.error('Keke TV: Error opening URL:', error);
+                        console.error('Egg TV: Error opening URL:', error);
                         // Fallback to normal navigation
                         window.location.href = url;
                     }
@@ -248,7 +248,7 @@
                 showNotification(`Failed to add website: ${response.error}`, 'error');
             }
         } catch (error) {
-            console.error('Keke TV: Failed to add website:', error);
+            console.error('Egg TV: Failed to add website:', error);
             showNotification(`Error: ${error.message}`, 'error');
         } finally {
             // Restore button state
@@ -336,12 +336,12 @@
                     if (response.success) {
                         hideToolbar();
                     } else {
-                        console.error('Keke TV: Failed to open home URL:', response.error);
+                        console.error('Egg TV: Failed to open home URL:', response.error);
                         // Fallback to normal navigation
                         window.location.href = config.serverUrl;
                     }
                 } catch (error) {
-                    console.error('Keke TV: Error opening home URL:', error);
+                    console.error('Egg TV: Error opening home URL:', error);
                     // Fallback to normal navigation
                     window.location.href = config.serverUrl;
                 }
@@ -361,12 +361,12 @@
                     if (response.success) {
                         hideToolbar();
                     } else {
-                        console.error('Keke TV: Failed to open Google:', response.error);
+                        console.error('Egg TV: Failed to open Google:', response.error);
                         // Fallback to normal navigation
                         window.location.href = 'https://www.google.com';
                     }
                 } catch (error) {
-                    console.error('Keke TV: Error opening Google:', error);
+                    console.error('Egg TV: Error opening Google:', error);
                     // Fallback to normal navigation
                     window.location.href = 'https://www.google.com';
                 }

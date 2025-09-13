@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database initialization script for Keke TV
+Database initialization script for Egg TV
 Creates tables and adds sample data
 """
 
